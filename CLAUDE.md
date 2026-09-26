@@ -16,7 +16,7 @@ Started 2026-07 as a weekend reverse-engineering study of DIRT 5 (Codemasters EG
 | party mods + launcher | `docs/party-mods.md`, `scripts/Start-Dirt5Party.ps1` | verified in-game (most) |
 | unattended test harness | `scripts/Test-Dirt5Mod.ps1` | works |
 | companion apps (C#) | `src/Dirt5.TrackCompanion`, `src/Dirt5.SaveInspector`, `src/Dirt5.Probe` | wall works, OCR diary experimental |
-| release packaging | `scripts/Pack-Tools.ps1` → `release/*.zip`, pages in `docs/release/` | ready |
+| release packaging + CI | `.github/workflows/` (ci + release), `scripts/release_ci.py`, `pack_mod.py`, `check_repo.py`, `Pack-Tools.ps1`; pages in `docs/release/` | live: one GitHub release per tool and per example mod |
 
 Framing for anything public: **personal & experimental, offline only, not affiliated with Codemasters/EA, no game files in the repo.** Every mod generates its content from the player's own game copy at apply time.
 
@@ -60,6 +60,8 @@ Framing for anything public: **personal & experimental, offline only, not affili
 - **Hidden options:** accepted ≠ working. `--micromachinescamera`, `--disableai`, `--showresolutions` do nothing in the release build; `--script <wbs>` hangs on the loading page; `--benchmark` does nothing by itself.
 - **Harness quirks:** frames are only captured while the game has focus (popups or user clicks → skipped frames; the log says `recorded X of Y`); OCR can't read the page titles (display font) — pages are recognised by their button bars; the race clock OCR misreads single digits (`01:14` → `02:14`), `Get-LapTimes` repairs that (`-Reanalyze <run dir>` recomputes old runs).
 - **Background monitors:** watch an explicit output file path (not "newest file", which can pick the monitor's own output); stop old monitors before arming new ones for the same run.
+- **Releasing = bump a version and push to main.** Tools: `release.json`; mods: `version` in `mods/_example-*/mod.json`. `release.yml` publishes every unit whose tag (`d5ml/vX`, `unlocked/vX`, `mod/<id>/vX`) doesn't exist yet; only D5ML is marked "Latest". `python scripts/release_ci.py --dry` shows the plan, `--build` builds locally. `ci.yml` runs `check_repo.py` (public-safety token hashes, no game files, JSON/mod validation, NUL/tab hygiene), the PowerShell parser and the C# builds on every push.
+- **CJK fonts are subsets:** a character the vanilla Japanese/Korean/Chinese text never uses renders as a red box. `_loc_set_ids` warns; pick words the game already uses. `--language <code>` forces a UI language for tests.
 - **Markdown:** one paragraph = one source line (a local hook blocks hard-wrapped paragraphs).
 - **Decisions belong to the user:** ask with clickable options before outward-facing or hard-to-undo steps (creating repos, pushing, deleting history); yesterday's OK is not today's OK — except the standing launch permission above.
 
@@ -97,7 +99,8 @@ pwsh -File scripts\D5ML.ps1 -Snapshot shot.png -Select a,b    # render a window 
 | `Dirt5-Unlocked.ps1` + `docs/unlocked-options.json` | hidden-options launcher + catalogue with status |
 | `Start-Dirt5Modded.ps1`, `Start-Dirt5Party.ps1` | launchers (offline, RunAsInvoker) |
 | `Send-Dirt5Input.ps1`, `Read-Dirt5Text.ps1`, `Test-Dirt5Mod.ps1`, `d5sheet.py` | drive the game, OCR, unattended tests, contact sheets / reset counter |
-| `Pack-Tools.ps1`, `Pack-Dirt5Mod.ps1` | release zips |
+| `Pack-Tools.ps1`, `Pack-Dirt5Mod.ps1`, `pack_mod.py`, `release_ci.py`, `check_repo.py` | release zips, CI releases, repo gate |
+| `export_car_stats.py` | car cards (grades, bhp, kg, class) for the Car Companion |
 | `Set-Dirt5Offline.ps1` | firewall block |
 | `Hunt-Dirt5.ps1` | memory scanner (MSIX research, FINDINGS §4) |
 | `header_scan.py`, `strings_scan.py`, `Copy-Samples.ps1` | early format survey |
@@ -111,9 +114,10 @@ Open work lives in the issues (each carries the facts, file paths and a plan): h
 - **New content:** #1 car variants (vehicledata clone + own vdef), #2 livery thumbnails, #3 livery packs for any car, #4 AI drivers
 - **Graphics:** #5 LUT per track/weather + verify Vivid
 - **Unlocked:** #6 the 19 untested options, #7 FOV slider via memory
-- **Reach:** #8 Steam build, #15 NexusMods checklist (tools), #19 CI: per-mod builds + automated GitHub releases, #20 one NexusMods page per mod
+- **Reach:** #8 Steam build, #15 NexusMods checklist (tools), #20 one NexusMods page per mod
 - **Research:** #10 Playground Archive, #11 boot scripts, #13 audio, #14 models, #18 memory on the loose build
-- **Quality:** #9 BC7 modes, #12 harness improvements, #16 Car Companion real stats, #17 party texts for 9 languages
+- **Quality:** #9 BC7 modes, #12 harness improvements
+- **Done 2026-09-26:** #16 Car Companion car card, #17 party texts in 9 languages, #19 CI + per-unit GitHub releases, #21 AI/hobby disclaimer
 
 ---
 

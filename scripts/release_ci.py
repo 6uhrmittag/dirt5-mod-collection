@@ -87,8 +87,8 @@ def main(argv):
             continue
         notes_path = os.path.join(OUT, "notes.md")
         open(notes_path, "w", encoding="utf-8").write(notes)
-        run(["gh", "release", "create", u["tag"], u["zip"], "-R", REPO, "--target", sha,
-             "--title", u["title"], "--notes-file", notes_path])
+        run(["gh", "release", "create", u["tag"], u["zip"], "-R", REPO, "--target", sha,     # "Latest" = the mod loader
+             "--title", u["title"], "--notes-file", notes_path, f"--latest={str(u['tag'].startswith('d5ml/')).lower()}"])
         print(f"released {u['tag']}")
     return 0
 
