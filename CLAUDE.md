@@ -111,7 +111,7 @@ Open work lives in the issues (each carries the facts, file paths and a plan): h
 - **New content:** #1 car variants (vehicledata clone + own vdef), #2 livery thumbnails, #3 livery packs for any car, #4 AI drivers
 - **Graphics:** #5 LUT per track/weather + verify Vivid
 - **Unlocked:** #6 the 19 untested options, #7 FOV slider via memory
-- **Reach:** #8 Steam build, #15 NexusMods release
+- **Reach:** #8 Steam build, #15 NexusMods checklist (tools), #19 CI: per-mod builds + automated GitHub releases, #20 one NexusMods page per mod
 - **Research:** #10 Playground Archive, #11 boot scripts, #13 audio, #14 models, #18 memory on the loose build
 - **Quality:** #9 BC7 modes, #12 harness improvements, #16 Car Companion real stats, #17 party texts for 9 languages
 
