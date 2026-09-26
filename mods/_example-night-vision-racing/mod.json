@@ -1,0 +1,15 @@
+{
+  "name": "Night Vision Racing",
+  "version": "1.0.0",
+  "author": "macha",
+  "description": "example d5ml mod: the game's own photo-mode night-vision filter on top of every track colour grade - the whole game in NVG green. No files shipped, it's all generated from your install.",
+  "generate": [
+    {
+      "target": "data:textures/render/luts/*.gtx",
+      "exclude": ["data:textures/render/luts/pm_*", "data:textures/render/luts/identity.gtx"],
+      "steps": [
+        { "effect": "lut", "source": "data:textures/render/luts/pm_night_vision.gtx" }
+      ]
+    }
+  ]
+}

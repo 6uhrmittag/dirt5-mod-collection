@@ -1,0 +1,21 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net8.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <RootNamespace>Dirt5.Probe</RootNamespace>
+    <AssemblyName>Dirt5.Probe</AssemblyName>
+  </PropertyGroup>
+
+  <!--
+    Empirical EGO-tool test: reference NefsLib straight from the cloned repo under
+    tools/. NOTE: tools/ is git-ignored, so a fresh clone must first run the clone
+    step from README/FINDINGS before this solution will build.
+  -->
+  <ItemGroup>
+    <ProjectReference Include="..\..\tools\ego.nefsedit\VictorBush.Ego.NefsLib\VictorBush.Ego.NefsLib.csproj" />
+  </ItemGroup>
+
+</Project>

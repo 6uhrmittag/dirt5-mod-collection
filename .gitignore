@@ -1,0 +1,53 @@
+# DIRT 5 modding workspace — keep the repo small and legal.
+# Never commit copied game files, extraction output, or cloned tool binaries.
+
+# Copied game samples (COPIES only, but still game data — do not redistribute)
+/samples/*
+!/samples/.gitkeep
+
+# Extraction output
+/extracted/*
+!/extracted/.gitkeep
+
+# Cloned third-party tool repos / downloaded binaries
+/tools/*
+!/tools/.gitkeep
+
+# .NET build output
+[Bb]in/
+[Oo]bj/
+*.user
+
+# Python
+__pycache__/
+*.pyc
+.venv/
+
+# OS / editor
+Thumbs.db
+desktop.ini
+.idea/
+.vs/
+
+# Claude Code local project settings
+/.claude/
+
+# Game screenshots dropped in the repo root for calibration (personal/game captures)
+/carselect*.png
+/trackselect*.png
+/results*.png
+/*.ocr.txt
+
+# packaged mod releases (built by scripts/Pack-Dirt5Mod.ps1)
+/release/
+
+# D5ML mods: only the README and example mods are versioned (own mods may contain game-derived files)
+/mods/*
+!/mods/README.md
+!/mods/_example*/
+
+# AI assistant working notes stay local
+/CLAUDE.md
+# session posters written by the Couch Session Wall (contain gamertags)
+/docs/dirt5-session-*.png
+/docs/car-select.png

@@ -1,0 +1,201 @@
+# DIRT 5 command-line options (game_release.exe 1.0.276760.537, loose install)
+# Recovered from the exe's option table (name/help pointer pairs). Use as --<name> [value].
+# Verified live 2026-09-25: releasefps, nosave, nonetworkerrors, disableonline, skipvideos/skiplegals (see FINDINGS.md 5).
+
+help                             Displays all command line arguments.
+bootscript                       Takes in a boot script to run
+script                           Takes in a script to run. This will stop the normal game phase flow.
+scripttrack                      Track Test Mode only. Sets the track to load.
+trackstatscollectlods            The Track Stats test will collect the LODs if this is true
+ttytotelemetry                   Sends the TTY to the telemetry server
+memorytracking                   Enables full memory tracking
+budgetuse                        Enable budget tracing for memory contexts with the specified name. E.g. 'Global', 'MainMenu', 'Level', etc.
+ttytocout                        Sends the TTY to cout
+nodebuginfo                      turn off 'On-screen' debug info
+devmenu                          Boot into the dev menu rather than the proper UI
+audiosys                         Specify which AudioSystem to use... [Wwise / Dummy]
+nofatalbudgets                   If present, stops budget warning causing fatal errors
+hidebudgetsunlessblown           If present, stops budget printouts unless warning
+nofatalshaderasserts             If present, stops shader asserts causing a fatal error on exit
+captureonshaderasserts           If present, triggers a pix capture when we get a shader assert, works on Xbox only at the moment. Needed for NAN checking
+disableguierrorreporting         If present, prevents on screen gui error reporting.
+tweaks                           Load the specified evotweaks file when the game boots.
+tracefilter                      Only the specified channel will be show in the trace
+negativewindowx                  Window client area horizontal position in negative pixels (Windows only) e.g. --windowx 10  == -10
+windowx                          Window client area horizontal position in pixels (Windows only) e.g. --windowx 0
+windowy                          Window top border vertical position in pixels (Windows only) e.g. --windowy 0
+displaywidth                     Display width in pixels e.g. --displaywidth 1920
+displayheight                    Display height in pixels e.g. --displayheight 1080
+fullscreen                       starts the game in full screen
+allowletterboxing                If true, will fit the aspect ratio according to the view quality, if false, the letterboxing is disabled
+noparticles                      Disables particles
+asyncbloom                       Perform bloom on async compute queue. Off by default on PC, on by default on console
+notaa                            Disables TAA (initially).  Can always be toggled at run-time
+nofecamerawobble                 Disables the camera movement in the FE
+fpx                              Set booting into the first player experience 'on' or 'off'
+noosd                            Prevent the OSD from being displayed.
+autopilotall                     If present, puts the player under AI control
+hotswapping                      Enables hotswapping.
+targethost                       Sets the host you want to connect to. Doesn't auto join a lobby, Have to press join on the main menu.
+complog                          Enables Competitor Logging
+forcefeedback                    Set rumble controller force feedback to 'on' or 'off'.
+sendgametelem                    Enables sending of gameplay telemetry to our internal telemetry servers
+telemtags                        Comma separated list of tags to add to all telemetry sent to our internal telemetry servers
+overrideplayernames              Set whether Player visible name is taken from competitorconstants.h or Gamesparks (or default)
+recorddevreplay                  Enables dev replay recording.
+noreplayrecord                   Disables all replay recording.
+capturereplay                    Loads the specified replay and begins capture.
+capturecamera                    Loads the specified animated camera for replay capture. Must be used with --capturereplay.
+capturetake                      Take name of the capture. E.g. --capturetake Take1_1
+capturepath                      Specify a place to save captured frames. Defaults to devsave:replay_renders. E.g. --capturepath tmp:replay_renders
+capturein                        Specify a custom 'in' time for the capture. Use with -captureout
+captureout                       Specify a custom 'out' time for the capture. Use with -capturein
+shutterspeed                     Specify the shutter speed you want for photomode. This value is 1 / X format. e.g use 250 for 1/250 (0.004)
+devreplaycockpitcam              Forces the game to use cockpit camera in dev replays instead of the usual chase camera.
+disablecamerashake               Disables camera shake in the game for the user cameras.
+testreplayflow                   Always show a replay when player dies.
+replaycontrol                    Show the Replay Control window on boot.
+physicssnapshotcontrol           Show the physics snapshot control window on boot.
+enablephysicssnapshot            Enables the pad input for snapshot physics
+physicsaudit                     Run the physics auditor, which posts results to telemetry on Kibana
+auditor                          Run the auditor. Tests various assets to make sure they're valid.
+conciseauditoroutput             Use with -auditor. Trims the output so that only errors are sent.
+uselocalhandlingdefs             Load vehicle defs from physics/vehicledefs/.. instead of gamesparks/server
+uselocalsurfacedefs              Load surface defs from art:surfaces/.. instead of gamesparks/server
+nophysicsreplay                  If present, physics based interpolation for vehicles in replays will be disabled.
+nophysicsparticles               Disables havok particles spawning in game
+nodrivers                        If present, no drivers will be added to the vehicles.
+noengineaudio                    Disable engine audio for all vehicles
+playerengineaudio                Disable engine audio for all vehicle except the local player
+language                         Force the game to use a particular language
+nops5audiohaptics                Disable audio-driven haptics on PS5. Use same haptics as other platforms
+displayfps                       Turn FPS display 'on' or 'off'.
+fixedfps                         If present, forces a fixed timestep based on target FPS. Will run slow if FPS cannot be achieved
+FPSJitter                        If present, adds a jitter of this FPS to the fixed fps
+fpslimit                         Specify a maximum FPS. If game is capable of faster it will be clamped to this limit
+setthreadcount                   Attempts to limit the number of threads created for use by TBB.
+forcephysicalcpucores            Attempts to limit the number of threads created to be the same as the number of physical (ie. not hyperthreaded or shared cores) CPU cores. *THIS DOES NOT ENSURE AFFINITY TO ONLY RUN ON PHYSICAL CORES.*
+fliprate                         Specify the fliprate to use.
+server                           Specify the server environment. current options dev,scratch,cte, custom
+previewServer                    Specify 'on' to connect to the preview server or 'off' to connect to live
+apikey                           Specify the key for a bespoke server environment. If this is on, you NEED apisecret too
+apisecret                        Specify the secrete key for a bespoke server environment. If this is on, you NEED apikey too
+findmyfriends                    Specify a filter so that only friends including this name will show up in the friends list
+showpeerids                      Display peer ids in lobby lists
+choosePlaylistIndex              Allows the host to specify which event he wants to play in an online playlist, instead of getting a random one.
+forceonlineevent                 Allows the host to specify by name the event to be played in an online match.
+clientversionmajor               Specify the Playfab client version major number.
+clientversionminor               Specify the Playfab client version minor number.
+clientversionpatch               Specify the Playfab client version patch number.
+nodesync                         Disable the desync behaviour
+nodisconnectflow                 Disables the disconnect flow (for debugging)
+captureframes                    Outputs a 1/4 resolution dds file of each frame to the capture folder (windows only))
+playgo_debug                     PlayGo installation progress controlled by evotweak.
+uieditortest                     Test mode for ui editor
+debuguipage                      Specify a ui page name (see gameui.cpp) This will then appear as a link in the debug page for quick access
+debug_steamapi                   Display informational messages about Steam
+skipvideos                       Skip videos
+skiplegals                       Skip legals screens
+skipftue                         Skip First Time User Experience sequence
+enableDisabledFeatures           Re-enables the disabled features so we can tweak them
+vehicleselectoneplayer           Controls all the players in vehicle selection page with primary player input
+allowdebugvehicles               Allow debug vehicles to be selected for a race
+releasefps                       Show a FPS/CPU/GPU/Build Info window.
+showresolutions                  Show a Render/History/Display resolutions Info window.
+vrambudgetwarning                Set the VRAM budget warning display mode to 'on' (always on) or 'auto' (display when over budget).
+prebeta                          Show a pre-beta panel
+shownetworkpings                 Show a Network Ping Info window.
+nonetcompression                 Disable network data compression for dobNetworkedDataObjects
+disableservertimeout             Prevents disconnection from GameSpark server due to prolonged break in communication (e.g. breakpoint).
+nosaveload                       Don't do any saving or loading of profile data
+nosave                           Don't do any saving of profile data
+noload                           Don't do any loading of profile data
+noinactivitywarning              Disable the inactivity check
+matchingAutotest                 Runs the matchmaking auto test
+randomGamesparksDisconnects      Disconnects randomly from Gamesparks for debugging (around once every 5 minutes
+nologinwait                      Don't wait for the user login to timeout
+benchmark                        Sets a combination of other options (autopilot, script, fixedfps) as well as other settings required for consistent benchmarking
+benchmarktotelemetry             When benchmarking is enabled this option sends the report to the telemetry server
+benchmarktofile                  When benchmarking is enabled this option sends the report to a textfile in your documents
+forcedseed                       Force all (known) RNG seeds to a set initial value.  Any stored seed can continue to permute deterministically as normal thereafter.
+crashme                          Crashes the game when you leave the start screen
+sessiondirectordebug             A debug HUD for the Session Director
+disable4K                        Force Xbox One X to display at 1080 (handy if you want to read ImGui text)
+unhealthyattitude                Don't show the health warning
+nomusic                          Don't play any music
+showrankedskill                  Show your ranked skill and uncertainty
+ingamedashboard                  An ingame dashboard to do things you would normally do on a console dashboard
+resetsteamstats                  Reset all Steam stats and achievements
+assetdebug                       Output debug TTY for assets
+assetdebugname                   Output debug TTY for the named asset
+assetdebugui                     An ImGui debug pane for assets
+playcareerevent                  Loads into the career event with the given name.
+clearsteamsaves                  Clears all Steam saves, both local and remote
+autoactivate                     Automatically activate the user who started the game
+diorama                          Go through the Dirt5 diorama flow.
+pg_palette                       Pick a playground object palette file to override the default.
+uiscript                         Run a ui test script
+remoteuiscript                   Run a remote ui test script
+startmatchmaking                 Starts matchmaking instantly on the devmenu
+customusername                   Custom username override
+networkinfo                      Enables the network information option in evotweak
+networklogging                   Enables debug network logging that shouldn't be enabled in-game (could spam)
+forcereliableconnection          Force TCP connections only
+disabletcpcompression            Disable sending compressed TCP packets
+disableudpcompression            Disable sending compressed UDP packets
+disableonline                    Disables Online Option in main menu
+connect                          Automatically connect to a server ip address. Defaults to 127.0.0.1
+serverip                         ServerIP address. Defaults to 127.0.0.1
+tcpport                          Server IP port defaults to 56101
+udpport                          Server IP port defaults to 56100
+matchmakingqueue                 Specify a custom matchmaking queue on PlayFab
+matchmakingregion                Specify a custom region when matchmaking on PlayFab
+matchmakingbuildid               Specify a custom build id when matchmaking on PlayFab
+eventflownetworkdebug            Draws network debug information during the event flow
+enablematchmaking                Enable playfab matchmaking testing
+localmatchmaking                 Matchmakes through playfab but connects to server ip specified via -serverip
+showdebugrevcounter              Shows the debug rev counter in debug/dev builds
+showdebugassistlights            Shows the debug assist indicator lights in debug/dev builds
+forceunoptimisedracinglines      Disables the optimisation step of raceline generation
+playgroundserver                 server environment to connect to for playground storage
+careercheatcode                  Sets all of Career to unlocked without having to 
+pausetimeofday                   Pause the environment controller
+disableai                        Disable the AI
+micromachinescamera              Enables the Micro Machines Camera during gameplay
+debugradar                       Enables the Debug Draw Radar
+recorddevreplaylap               For the Rocco Times Tool. Records the event and saves it if completed.
+imagetestparticles               Enable particles in imagetest
+enableplaygroundvolumevalidation Enable playground volume validation
+hapticsoff                       Turn off all haptic feedback
+numberofframestoaccumulate       The number of frames to calculate the photomode image with the photomode camera.
+letmesavepartygames              Allows the user to save a Playground with Party Game Mode locally.
+nofatalpopups                    Disable windows error popups used for certain fatal errors
+assertonbadhttpresponse          Asserts on http responses outside of 200 range
+crowdenabled                     Force the crowd on (it is otherwise controlled via EvoTweak
+nocashlocks                      Make all purchasable items free
+noitemlocks                      Make all items auto unlocked
+showallrewards                   Shows the max(3) amount of rewards for each category that can be shown in the post event rewards sequence
+unlockallentitlements            Unlocks all entitlement controled objects (vehicles, player card items etc
+pg_print_template_names          Prints the names of playground object templates when loading playgrounds
+nonetworkerrors                  Disable the fruit-coded network error messages, GameConnectionManager pretends everything is online and fine
+checkdynamictextures             Check that ui dynamic texture folders are robust
+nowrongwayrtt                    Disables Wrong way RTT Rule in all game modes
+debug_ghost_shape                enables a debug model for the ghost
+unlockamd                        Requested by AMD. Unlocks the Citroen C3 and grants full sponsor rep with AMD
+idontwanttorace                  Skips racing playing state and should always finish the primary player in first.
+endeventearly                    End the event prematurely after 15 seconds
+idontwanttorace                  Skips racing playing state and should always finish the primary player in first.
+showinracequalityconfigselection Allows for config quality to be able to be changed during an event.
+disableroaderrors                Disables the displaying of errors when generating road data.
+showmatchmakingdebug             Show the current matchmaking status in an IMGUI window,
+cloudscriptrevision              Override the playfab cloud script revision to use.  Default behaviour is to use latest.
+custommatchingid                 A custom string to use to isolate matchmaking to prevent others joining your session.
+matchmakingsoaktest              Automated flow into matchmaking.  Repeats after the event has finished.
+ssao                             (on)/(off) Turns FidelityFX Ambient Occlusion On/Off
+ssaoQuality                      [0, 8] Override SSAO Quality (wins over config files). Maps to enum in gooScreenSpaceAmbientOcclusion.
+computeshadervertextransformation Enables compute shader vertex transformation. This is required to build BLASes from deformed/skinned meshes for vehicles and drivers
+showinvalidsurfaces              Show onscreen messages for surfaces whose hash is not found in the SurfacesDatabase
+allowkeyboardingamepadareas      Bypass the input method checks to allow keyboard controls in area such as the playgrounds and livery editors
+allowmultiinstance               Allow multiple concurrent instances of this application to run.
+noupsellnotifications            Stops the upsell notifications from being shown in the front end.
+fatdump                          Generate more info in minidump

@@ -1,0 +1,28 @@
+{
+  "name": "Lancia 037 - 4th livery (NEW)",
+  "version": "1.0.0",
+  "author": "macha",
+  "description": "example d5ml mod: adds a brand-new 4th livery to the Lancia 037 - new texture files cloned from livery 03, recoloured with our own stars, plus a new entry in the livery database. Unlocked for everyone.",
+  "clone": [
+    { "from": "lancia_037_livery_03", "to": "lancia_037_livery_04", "in": "data:textures/vehicles/liveries/" }
+  ],
+  "json": [
+    {
+      "file": "data:event/liverydata/liverydata.json",
+      "clone_object": {
+        "match": { "Name": "lancia_037_livery_03" },
+        "set": { "Name": "lancia_037_livery_04", "index": 4, "Event Unlock": [], "Sponsor": 0, "SponsorRank": 0 }
+      }
+    }
+  ],
+  "generate": [
+    {
+      "target": "data:textures/vehicles/liveries/lancia_037_livery_04.gtx",
+      "steps": [
+        { "effect": "hue", "amount": 250 },
+        { "effect": "saturate", "amount": 1.4 },
+        { "effect": "overlay", "image": "stars.png" }
+      ]
+    }
+  ]
+}

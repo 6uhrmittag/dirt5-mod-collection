@@ -1,0 +1,7 @@
+{
+  "name": "Bedtime Arcade",
+  "version": "0.1.0",
+  "author": "macha",
+  "description": "example d5ml mod: own-art Arcade poster + longer pub menu texts (GO TO BED, ONE MORE RACE!!)",
+  "recipes": ["partytext_xl"]
+}

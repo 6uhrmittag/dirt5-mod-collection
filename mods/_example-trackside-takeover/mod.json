@@ -1,0 +1,19 @@
+{
+  "name": "Trackside Takeover",
+  "version": "1.0.0",
+  "author": "macha",
+  "description": "example d5ml mod: every trackside sponsor banner in all 10 countries becomes our own fake sponsors (D5ML, UwU ENERGY, GO TO BED, FREIBIER ...). Country art stays.",
+  "generate": [
+    {
+      "target": "data:textures/environments/props/branding_array_*_c.gtx",
+      "exclude": "data:textures/environments/props/branding_array_hubworld_*",
+      "steps": [
+        { "effect": "overlay", "image": "layer0.png", "box": [0, 0.0, 1, 0.125] },
+        { "effect": "overlay", "image": "layer1.png", "box": [0, 0.125, 1, 0.125] },
+        { "effect": "overlay", "image": "layer2.png", "box": [0, 0.25, 1, 0.125] },
+        { "effect": "overlay", "image": "layer3.png", "box": [0, 0.375, 1, 0.125] },
+        { "effect": "overlay", "image": "layer4.png", "box": [0, 0.5, 1, 0.125] }
+      ]
+    }
+  ]
+}

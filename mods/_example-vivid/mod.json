@@ -1,0 +1,15 @@
+{
+  "name": "Vivid",
+  "version": "1.0.0",
+  "author": "macha",
+  "description": "example d5ml mod: a punchier colour grade on every track and weather (+22% saturation, +6% contrast) - a graphics mod without ReShade, made by editing the game's own grading LUTs.",
+  "generate": [
+    {
+      "target": "data:textures/render/luts/*.gtx",
+      "exclude": ["data:textures/render/luts/pm_*", "data:textures/render/luts/identity.gtx"],
+      "steps": [
+        { "effect": "grade", "saturation": 1.22, "contrast": 1.06 }
+      ]
+    }
+  ]
+}

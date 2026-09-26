@@ -1,0 +1,258 @@
+{
+  "about": "DIRT 5 Unlocked - curated hidden command-line options of game_release.exe 1.0.276760.537 (full table: docs/dirt5-cli-options.txt). status: verified = seen working in-game; no-effect = accepted but did nothing in the release build (tested in-game, probably dev-build only); untested = accepted by the option table, effect not checked yet. nosave: unlock-type options force --nosave so free/unlocked items can't leak into the real profile.",
+  "groups": [
+    {
+      "name": "Camera & view",
+      "options": [
+        {
+          "flag": "micromachinescamera",
+          "label": "Micro Machines top-down camera",
+          "help": "Enables the Micro Machines Camera during gameplay",
+          "status": "no-effect",
+          "tested": "2026-09-26: normal chase camera in a Land Rush race"
+        },
+        {
+          "flag": "noosd",
+          "label": "Hide HUD (no on-screen display)",
+          "help": "Prevent the OSD from being displayed.",
+          "status": "verified",
+          "tested": "2026-09-26: HUD fully hidden (clock, positions, speedometer, minimap)"
+        },
+        {
+          "flag": "pausetimeofday",
+          "label": "Freeze time of day",
+          "help": "Pause the environment controller",
+          "status": "untested"
+        },
+        {
+          "flag": "crowdenabled",
+          "label": "Force the crowd on",
+          "help": "Force the crowd on (it is otherwise controlled via EvoTweak)",
+          "status": "untested"
+        }
+      ]
+    },
+    {
+      "name": "Driving & AI",
+      "options": [
+        {
+          "flag": "autopilotall",
+          "label": "Autopilot - the AI drives your car",
+          "help": "If present, puts the player under AI control",
+          "status": "verified"
+        },
+        {
+          "flag": "disableai",
+          "label": "No AI opponents",
+          "help": "Disable the AI",
+          "status": "no-effect",
+          "tested": "2026-09-26: AI cars still on track"
+        },
+        {
+          "flag": "nowrongwayrtt",
+          "label": "No 'wrong way' reset rule",
+          "help": "Disables Wrong way RTT Rule in all game modes",
+          "status": "untested"
+        },
+        {
+          "flag": "endeventearly",
+          "label": "End every event after 15 s",
+          "help": "End the event prematurely after 15 seconds",
+          "status": "untested"
+        },
+        {
+          "flag": "idontwanttorace",
+          "label": "Skip racing, finish 1st",
+          "help": "Skips racing playing state and should always finish the primary player in first.",
+          "status": "untested",
+          "nosave": true
+        },
+        {
+          "flag": "vehicleselectoneplayer",
+          "label": "P1 picks the cars for everyone (splitscreen)",
+          "help": "Controls all the players in vehicle selection page with primary player input",
+          "status": "untested"
+        },
+        {
+          "flag": "hapticsoff",
+          "label": "No controller rumble",
+          "help": "Turn off all haptic feedback",
+          "status": "untested"
+        }
+      ]
+    },
+    {
+      "name": "Unlocks (offline, forces --nosave)",
+      "options": [
+        {
+          "flag": "nocashlocks",
+          "label": "Everything purchasable is free",
+          "help": "Make all purchasable items free",
+          "status": "untested",
+          "nosave": true
+        },
+        {
+          "flag": "noitemlocks",
+          "label": "All items unlocked",
+          "help": "Make all items auto unlocked",
+          "status": "verified",
+          "nosave": true,
+          "tested": "2026-09-26: rank-locked liveries (Lancia 037 livery 02/03, rank 15) selectable on a rank-01 profile"
+        },
+        {
+          "flag": "unlockallentitlements",
+          "label": "All entitlement cars/items",
+          "help": "Unlocks all entitlement controled objects (vehicles, player card items etc)",
+          "status": "untested",
+          "nosave": true
+        },
+        {
+          "flag": "careercheatcode",
+          "label": "Whole career unlocked",
+          "help": "Sets all of Career to unlocked",
+          "status": "untested",
+          "nosave": true
+        },
+        {
+          "flag": "allowdebugvehicles",
+          "label": "Debug vehicles selectable",
+          "help": "Allow debug vehicles to be selected for a race",
+          "status": "untested",
+          "nosave": true
+        },
+        {
+          "flag": "unlockamd",
+          "label": "AMD Citroen C3 + AMD sponsor rep",
+          "help": "Requested by AMD. Unlocks the Citroen C3 and grants full sponsor rep with AMD",
+          "status": "untested",
+          "nosave": true
+        },
+        {
+          "flag": "showallrewards",
+          "label": "Show all 3 rewards after events",
+          "help": "Shows the max(3) amount of rewards for each category that can be shown in the post event rewards sequence",
+          "status": "untested"
+        }
+      ]
+    },
+    {
+      "name": "HUD & performance",
+      "options": [
+        {
+          "flag": "releasefps",
+          "label": "FPS / CPU / GPU / build overlay",
+          "help": "Show a FPS/CPU/GPU/Build Info window.",
+          "status": "verified"
+        },
+        {
+          "flag": "showresolutions",
+          "label": "Render resolution overlay",
+          "help": "Show a Render/History/Display resolutions Info window.",
+          "status": "no-effect",
+          "tested": "2026-09-26: no resolution overlay (FPS overlay from releasefps only)"
+        },
+        {
+          "flag": "nomusic",
+          "label": "No music",
+          "help": "Don't play any music",
+          "status": "untested"
+        }
+      ]
+    },
+    {
+      "name": "Boot & menus",
+      "options": [
+        {
+          "flag": "skipvideos",
+          "label": "Skip intro videos",
+          "help": "Skip videos",
+          "status": "verified"
+        },
+        {
+          "flag": "skiplegals",
+          "label": "Skip legal screens",
+          "help": "Skip legals screens",
+          "status": "verified"
+        },
+        {
+          "flag": "skipftue",
+          "label": "Skip first-time tutorial",
+          "help": "Skip First Time User Experience sequence",
+          "status": "untested"
+        },
+        {
+          "flag": "nonetworkerrors",
+          "label": "No 'servers lost' popups",
+          "help": "Disable the fruit-coded network error messages",
+          "status": "verified"
+        },
+        {
+          "flag": "noupsellnotifications",
+          "label": "No DLC upsell popups",
+          "help": "Stops the upsell notifications from being shown in the front end.",
+          "status": "untested"
+        },
+        {
+          "flag": "unhealthyattitude",
+          "label": "No health warning screen",
+          "help": "Don't show the health warning",
+          "status": "untested"
+        },
+        {
+          "flag": "noinactivitywarning",
+          "label": "No inactivity warning",
+          "help": "Disable the inactivity check",
+          "status": "untested"
+        },
+        {
+          "flag": "nosave",
+          "label": "Don't save the profile",
+          "help": "Don't do any saving of profile data",
+          "status": "untested"
+        }
+      ]
+    }
+  ],
+  "presets": {
+    "photo": {
+      "label": "Photo mode",
+      "flags": [
+        "noosd",
+        "pausetimeofday",
+        "autopilotall",
+        "skipvideos",
+        "skiplegals"
+      ]
+    },
+    "couch": {
+      "label": "Couch party (splitscreen)",
+      "flags": [
+        "vehicleselectoneplayer",
+        "noinactivitywarning",
+        "nonetworkerrors",
+        "skipvideos",
+        "skiplegals"
+      ]
+    },
+    "creator": {
+      "label": "Content creator",
+      "flags": [
+        "autopilotall",
+        "noosd",
+        "nomusic",
+        "skipvideos",
+        "skiplegals"
+      ]
+    },
+    "cheatday": {
+      "label": "Cheat day (offline, no save)",
+      "flags": [
+        "nocashlocks",
+        "noitemlocks",
+        "unlockallentitlements",
+        "skipvideos",
+        "skiplegals"
+      ]
+    }
+  }
+}
