@@ -12,6 +12,7 @@
 #>
 param(
     [string] $Version = '1.0.0',
+    [ValidateSet('D5ML', 'Unlocked', 'All')] [string] $Only = 'All',   # CI releases each tool separately
     [string] $OutRoot = (Join-Path $PSScriptRoot '..\release')
 )
 $ErrorActionPreference = 'Stop'
@@ -57,5 +58,5 @@ $suspect = Get-ChildItem (Join-Path $root 'mods') -Recurse -File -Include '*.gtx
 if ($suspect) { throw "example mods contain game-format files: $($suspect.FullName -join ', ')" }
 
 New-Item -ItemType Directory -Force $OutRoot | Out-Null
-New-Package 'D5ML' 'D5ML.md' 'D5ML.bat' 'D5ML.ps1'
-New-Package 'DIRT5-Unlocked' 'Unlocked.md' 'DIRT5-Unlocked.bat' 'Dirt5-Unlocked.ps1'
+if ($Only -in 'D5ML', 'All') { New-Package 'D5ML' 'D5ML.md' 'D5ML.bat' 'D5ML.ps1' }
+if ($Only -in 'Unlocked', 'All') { New-Package 'DIRT5-Unlocked' 'Unlocked.md' 'DIRT5-Unlocked.bat' 'Dirt5-Unlocked.ps1' }
