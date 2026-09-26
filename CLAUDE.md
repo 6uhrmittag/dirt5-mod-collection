@@ -104,16 +104,16 @@ pwsh -File scripts\D5ML.ps1 -Snapshot shot.png -Select a,b    # render a window 
 
 ---
 
-## 7. Open work (ordered by value)
+## 7. Open work — GitHub issues
 
-1. **More new content:** proper thumbnail for new livery tiles (currently the fallback image); liveries for other cars (same `liverydata.json`); try new AI drivers / events via their JSON databases.
-2. **Map which colour-grading LUT each track/weather uses** (Night Vision proved LUT edits reach the renderer); verify **Vivid** in-game.
-3. **DIRT 5 Unlocked:** verify the 19 untested options with `Test-Dirt5Mod.ps1 -GameArgs`; `nomusic`/`hapticsoff` need a human; `--pausetimeofday` needs a long run.
-4. **FOV slider** via runtime memory write (camera values live in the exe: `CamFov`, `FieldOfView`; FINDINGS §4 has the read path, offsets differ on the loose build).
-5. **Steam build** support — needs a Steam copy to compare `dat.ndx`.
-6. BC7 encoder quality (mode 6 only; add modes 1/3).
-7. **Playground Archive** idea (export/import community playgrounds before servers go) — see `docs/nexusmods-pitch.md`.
-8. NexusMods upload of the release zips (maintainer's call).
+Open work lives in the issues (each carries the facts, file paths and a plan): https://github.com/6uhrmittag/dirt5-mod-collection/issues — `gh issue list -R 6uhrmittag/dirt5-mod-collection`. Highest value first:
+
+- **New content:** #1 car variants (vehicledata clone + own vdef), #2 livery thumbnails, #3 livery packs for any car, #4 AI drivers
+- **Graphics:** #5 LUT per track/weather + verify Vivid
+- **Unlocked:** #6 the 19 untested options, #7 FOV slider via memory
+- **Reach:** #8 Steam build, #15 NexusMods release
+- **Research:** #10 Playground Archive, #11 boot scripts, #13 audio, #14 models, #18 memory on the loose build
+- **Quality:** #9 BC7 modes, #12 harness improvements, #16 Car Companion real stats, #17 party texts for 9 languages
 
 ---
 
