@@ -46,8 +46,6 @@ desktop.ini
 !/mods/README.md
 !/mods/_example*/
 
-# AI assistant working notes stay local
-/CLAUDE.md
 # session posters written by the Couch Session Wall (contain gamertags)
 /docs/dirt5-session-*.png
 /docs/car-select.png

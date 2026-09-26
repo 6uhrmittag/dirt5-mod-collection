@@ -30,8 +30,8 @@ Example mods (own art only): `_example-bedtime` (own Arcade poster + `partytext_
 2. ~~Unknown formats 21/28/30~~ — done 2026-09-26: RGBA16F, RGBA32F cubemaps, R11G11B10F colour LUTs (+ `grade`/`lut` effects, examples Vivid + Night Vision Racing; **verified in-game**: the Night Vision run turns the whole race green, so LUT edits reach the renderer. Open: map which LUT each track/weather uses.
 3. BC7 encoder is mode 6 only (31–36 dB on noisy textures) — add modes 1/3 for sharper results — 1 evening.
 4. **Steam build**: needs a Steam copy to check `dat.ndx`/packs — unknown.
-5. Livery editing workflow: show the UV layout (render the car's `_m` mask over the PNG) so painters know where the bonnet is — 1 evening.
-6. `mod.json` schema doc + validation messages for typos — 30 min.
+5. ~~Livery editing workflow~~ — done: `d5ml.py extract` writes a `*.guide.png` (paint mask over the livery).
+6. ~~`mod.json` validation~~ — done: unknown keys/effect parameters, bad JSON and missing images give clear messages; `d5ml.py doctor` checks everything.
 
 ## DIRT 5 Unlocked — what works
 
@@ -41,7 +41,7 @@ Example mods (own art only): `_example-bedtime` (own Arcade poster + `partytext_
 
 **TODO (ordered):**
 1. Verify the remaining `untested` flags with the harness (`-GameArgs '--x'`), ~5 min each; audio/rumble ones (`nomusic`, `hapticsoff`) need a human.
-2. Unlock flags: the `d5ml_synthwave_livery02+noitemlocks` run tells whether `--noitemlocks` unlocks the rank-locked liveries (see its `livery_pick.png`).
+2. ~~`--noitemlocks`~~ — verified 2026-09-26: rank-locked liveries become selectable. `nocashlocks`, `unlockallentitlements`, `careercheatcode` still untested.
 3. `--pausetimeofday`: needs a long run (dawn → day) to see — 10 min.
 4. **FOV slider** — camera values live in the exe (`CamFov`, `FieldOfView`); runtime memory write (FINDINGS §4) — 1–2 evenings.
 
@@ -50,3 +50,5 @@ Example mods (own art only): `_example-bedtime` (own Arcade poster + `partytext_
 - Never patch a script a background run is executing (09-25: a NUL byte from a heredoc broke 7 runs). Use the Edit tool or write new files while a chain runs.
 - The harness stops when the game loses focus — by design. Don't type elsewhere during runs.
 - Lap parsing now repairs single-digit OCR misreads (`Get-LapTimes`, `-Reanalyze <run dir>`).
+
+Open work is tracked as GitHub issues since 2026-09-26: https://github.com/6uhrmittag/dirt5-mod-collection/issues
