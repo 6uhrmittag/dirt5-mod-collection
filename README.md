@@ -81,10 +81,10 @@ powershell -File scripts\Set-Dirt5Offline.ps1 -Disable
 Open `Dirt5Modding.sln` in Visual Studio 2022 (.NET 8 SDK). `Dirt5.Probe` references NefsLib from `tools/` — clone it first: `git -C tools clone --depth 1 https://github.com/EgoEngineModding/ego.nefsedit.git`.
 
 - **Couch Session Wall** — `dotnet run --project src\Dirt5.TrackCompanion -- --wall`: a full-screen live gallery on the second monitor while you play splitscreen on the first (live view, auto-curated top moments, filmstrip, session poster). Never takes focus, touches no game files. The OCR session diary is experimental.
-- **Car Companion overlay** — `dotnet run --project src\Dirt5.TrackCompanion -- --secondary`: per player, how often each of you raced the selected car on the selected track, with a "who's faster" mark. Set your names with `--set-player 1 "Name"` / `--set-player 2 "Name"`. The car-stat bars are placeholders.
+- **Car Companion overlay** — `dotnet run --project src\Dirt5.TrackCompanion -- --secondary`: per player, how often each of you raced the selected car on the selected track, with a "who's faster" mark. Set your names with `--set-player 1 "Name"` / `--set-player 2 "Name"`. Run `python scripts\export_car_stats.py` once to fill the car card (grades, bhp, Nm, kg, drivetrain, class) from your game.
 - **Save inspector** — `dotnet run --project src\Dirt5.SaveInspector`: read-only catalog of the Xbox WGS save blobs (ghosts, profile, livery recipes).
 
-![Track Companion](docs/track-companion.png)
+![Car Companion with the game's car card](docs/car-companion.png)
 
 ## License
 

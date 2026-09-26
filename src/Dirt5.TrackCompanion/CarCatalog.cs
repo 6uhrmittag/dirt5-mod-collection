@@ -3,19 +3,28 @@ using System.Text.Json;
 namespace Dirt5.TrackCompanion;
 
 /// <summary>
-/// A DIRT 5 car. <see cref="Stats"/> holds the game's card ratings when we manage
-/// to extract them (stretch); until then they are null and shown as placeholders.
+/// A DIRT 5 car. <see cref="Stats"/> is the game's own car card (from
+/// scripts/export_car_stats.py); null when that export hasn't been run yet.
 /// </summary>
 public sealed record Car(string Id, string Name)
 {
     public CarStats? Stats { get; init; }
 }
 
-/// <summary>DIRT 5 car-card ratings (0..10). Null = not yet extracted.</summary>
-public sealed record CarStats(int? Speed, int? Acceleration, int? Handling, int? Toughness)
+/// <summary>
+/// The car card as the game stores it in data:event/vehicledata/vehicledata.json.
+/// Performance/Handling are the grade letters of the in-game card (S, A, B, C).
+/// </summary>
+public sealed record CarStats(string? Name, string? Manufacturer, string? Performance, string? Handling,
+    int? PowerBhp, int? TorqueNm, int? WeightKg, string? Drivetrain, string? CarClass)
 {
-    public bool HasAny => Speed is not null || Acceleration is not null ||
-                          Handling is not null || Toughness is not null;
+    public bool HasAny => Performance is not null || Handling is not null || PowerBhp is not null;
+
+    /// <summary>Grade letter as a 0..10 bar value (S = full bar, C = under a third).</summary>
+    public static int? GradeValue(string? grade) => grade switch
+    {
+        "S" => 10, "A" => 7, "B" => 5, "C" => 3, _ => null,
+    };
 }
 
 /// <summary>
@@ -31,6 +40,24 @@ public sealed class CarCatalog
     public static string CachePath() => Path.Combine(
         Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData),
         "Dirt5TrackCompanion", "cars.json");
+
+    /// <summary>Written by scripts/export_car_stats.py (game data - stays on this PC).</summary>
+    public static string StatsPath() => Path.Combine(
+        Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData),
+        "Dirt5TrackCompanion", "carstats.json");
+
+    private static Dictionary<string, CarStats> LoadStats()
+    {
+        try
+        {
+            var path = StatsPath();
+            if (!File.Exists(path)) return new();
+            var opts = new JsonSerializerOptions { PropertyNameCaseInsensitive = true };
+            var map = JsonSerializer.Deserialize<Dictionary<string, CarStats>>(File.ReadAllText(path), opts) ?? new();
+            return new Dictionary<string, CarStats>(map, StringComparer.OrdinalIgnoreCase);
+        }
+        catch { return new(); }
+    }
 
     /// <summary>
     /// Build the roster. Prefers a live scan of <paramref name="scanPath"/> (game
@@ -65,9 +92,12 @@ public sealed class CarCatalog
         if (ids.Count == 0)
             ids = new() { "alfa_romeo_giulia_gtam", "baja_beetle", "ariel_nomad", "audi_s1_eks_rx_quattro" };
 
+        var stats = LoadStats();
         var cars = ids
             .Distinct(StringComparer.OrdinalIgnoreCase)
-            .Select(id => new Car(id, Naming.Prettify(id)))
+            .Select(id => stats.TryGetValue(id, out var st)
+                ? new Car(id, st.Name ?? Naming.Prettify(id)) { Stats = st }
+                : new Car(id, Naming.Prettify(id)))
             .OrderBy(c => c.Name, StringComparer.OrdinalIgnoreCase)
             .ToList();
         return new CarCatalog(cars);

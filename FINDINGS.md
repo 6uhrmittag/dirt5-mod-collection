@@ -149,13 +149,16 @@ editable via `--set-player`.
 - **Real car roster:** `CarExtractor` reads `models/vehicles/<id>` from `dat.ndx`
   → **78 internal car ids** (alfa_romeo_giulia_gtam, baja_beetle, lancia_stratos,
   porsche_911_rgt, …). `dat.ndx` confirmed to be a **plaintext asset-path table**.
-  **Known gap:** in-game display names can differ from internal ids — DIRT 5 uses
-  fictional brands for some cars (observed live: "WS Auto Racing Titan" is
-  internally `formula_offroad_v1`) → a display-name alias map is still needed.
-- **Car "stats" block is placeholder-only.** The game's Performance/Handling ratings
-  were never extracted from game data; the overlay renders empty bars. (The ratings
-  ARE visible as letter grades on the car-select info panel — a future OCR/extract
-  target.)
+  **Display names solved (2026-09-26, #16):** `data:event/vehicledata/vehicledata.json` has one
+  `VehData` object per car with `ChassisName` = the internal id and `Name` = the card name
+  (`baja_beetle` → "Jupiter Scout V6"). All 78 overlay ids have an entry (80 chassis total).
+- **Car card = vehicledata (2026-09-26, #16).** Per car: `PerformanceOverview` + `HandlingOverview`
+  (enum8 0..3 → the letter grades on the car-select panel; verified Lancia 037 = 3/2 = **C/B**
+  in-game, the rest `0=S 1=A 2=B 3=C` inferred), `Power` (bhp), `Torque` (Nm), `Weight` (kg),
+  `Displacement`, `Manufacturer`, and `DataTagList` tags (`Drivetrain` RWD/4WD, `Class`
+  e.g. `80s_Rally`). `scripts/export_car_stats.py` reads it read-only from the vanilla index
+  and writes `%APPDATA%\Dirt5TrackCompanion\carstats.json`; the overlay shows grade bars,
+  power/torque/weight/drivetrain, class + manufacturer, and bhp per tonne.
 - **Track axis:** the index over-extracts world sub-paths (254 raw → 184 after
   collapsing `_lr/_rr/_nc/_vN` route variants), so the selectable list is curated.
   **Caveat:** several curated slugs are placeholders, not verified names.

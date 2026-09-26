@@ -146,26 +146,34 @@ public sealed class OverlayForm : Form
         using (var line = new Pen(Color.FromArgb(55, 55, 62)))
             g.DrawLine(line, PadX, 92, width - PadX, 92);
 
-        // --- Car stats block ----------------------------------------------
+        // --- Car stats block (the game's own card, see export_car_stats.py) ---
+        var st = car.Stats;
         g.DrawString("CAR STATS", fHead, grey, PadX, 100);
-        var cats = new (string Label, int? Val)[]
-        {
-            ("Speed", car.Stats?.Speed),
-            ("Acceleration", car.Stats?.Acceleration),
-            ("Handling", car.Stats?.Handling),
-            ("Toughness", car.Stats?.Toughness),
-        };
+        if (st is { CarClass: { } cls })
+            g.DrawString($"{cls}  ·  {st.Manufacturer}", fSmall, dim, 150, 101);
         int sy = 118;
-        foreach (var (label, val) in cats)
+        foreach (var (label, grade) in new[] { ("Performance", st?.Performance), ("Handling", st?.Handling) })
         {
+            var val = CarStats.GradeValue(grade);
             g.DrawString(label, fCell, grey, PadX, sy);
             DrawRatingBar(g, 150, sy + 4, 250, 12, val);
-            g.DrawString(val is { } v ? v.ToString() : "—", fSmall, val is null ? dim : amber, 410, sy);
-            sy += 20;
+            g.DrawString(grade ?? "—", fMono, val is null ? dim : amber, 410, sy - 1);
+            sy += 22;
         }
-        if (car.Stats?.HasAny != true)
-            g.DrawString("(game ratings pending file extraction — usage below is live)",
-                fSmall, dim, PadX, sy);
+        if (st?.HasAny == true)
+        {
+            var bits = new List<string>();
+            if (st.PowerBhp is { } bhp) bits.Add($"{bhp} bhp");
+            if (st.TorqueNm is { } nm) bits.Add($"{nm} Nm");
+            if (st.WeightKg is { } kg) bits.Add($"{kg} kg");
+            if (st.Drivetrain is { } dt) bits.Add(dt);
+            g.DrawString(string.Join("  ·  ", bits), fCell, white, PadX, sy + 2);
+            if (st is { PowerBhp: { } p, WeightKg: > 0 and var w })
+                g.DrawString(string.Format(CultureInfo.InvariantCulture, "{0:0} bhp per tonne", p * 1000.0 / w),
+                    fSmall, dim, PadX, sy + 24);
+        }
+        else
+            g.DrawString("(no car card yet - run: python scripts/export_car_stats.py)", fSmall, dim, PadX, sy + 2);
 
         // --- Who's-faster comparison --------------------------------------
         int cy = 226;
