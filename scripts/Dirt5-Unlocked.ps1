@@ -80,7 +80,7 @@ Add-Type -AssemblyName System.Windows.Forms, System.Drawing
 [System.Windows.Forms.Application]::EnableVisualStyles()
 . (Join-Path $PSScriptRoot '_SnapshotForm.ps1')
 $form = New-Object $(if ($Snapshot) { 'D5SnapshotForm' } else { 'System.Windows.Forms.Form' }) -Property @{
-    Text = 'DIRT 5 Unlocked'; Width = 900; Height = 760; StartPosition = 'CenterScreen'
+    Text = 'DIRT 5 Unlocked   (~99 % AI-written hobby project by @6uhrmittag & @VoidCrowned - nothing is guaranteed)'; Width = 900; Height = 760; StartPosition = 'CenterScreen'
     BackColor = [System.Drawing.Color]::FromArgb(24, 18, 40); ForeColor = [System.Drawing.Color]::White
     Font = New-Object System.Drawing.Font('Segoe UI', 10)
 }

@@ -68,6 +68,8 @@ pause
 
 > $Tagline
 
+> **⚠ read this first.** about 99 % of this mod's code was written by an AI (Claude Code), directed and play-tested by us. it's a **hobby project**: [@6uhrmittag](https://github.com/6uhrmittag) and [@VoidCrowned](https://github.com/VoidCrowned) love DIRT 5 and wanted a bit more variety in this lovely game. **nothing is guaranteed** — no warranty, no support promise. keep backups, play offline.
+
 $(if ($Preview) { '![preview](preview.png)' })
 
 ## what it does

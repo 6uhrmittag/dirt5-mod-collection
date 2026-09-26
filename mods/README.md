@@ -1,5 +1,7 @@
 # mods/ — D5ML mod folder
 
+> ⚠ ~99 % AI-written hobby project, nothing guaranteed — see the disclaimer at the top of the [README](../README.md).
+
 Every sub-folder is one mod for D5ML (`scripts/D5ML.ps1` window, `scripts/d5ml.py` command line). Only this README and the `_example*` mods are in git — your own mods usually contain files derived from the game and stay local.
 
 ```

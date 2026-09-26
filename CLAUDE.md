@@ -38,7 +38,7 @@ Framing for anything public: **personal & experimental, offline only, not affili
 3. **Leave the install vanilla** after every test (`python scripts\d5mod.py status` must say `vanilla`), and close any game instance you started.
 4. **No game files in git.** `samples/`, `extracted/`, `tools/`, `release/`, own mods under `mods/*` are git-ignored; only `mods/README.md` and `mods/_example-*/` (own art + recipes/effects) are versioned. Never commit `.gtx/.gmp/.dat/.ndx/.vdef/.loc` or extracted JSON — `Pack-Tools.ps1` refuses to package game-format files from the examples.
 5. **Public-safety rules** for every commit, doc and screenshot:
-   - no gamertags, real names, relationship words, Windows user paths, save-data GUIDs/IDs, e-mail addresses in docs;
+   - no gamertags, real names, relationship words, Windows user paths, save-data GUIDs/IDs, e-mail addresses in docs — **exception:** the maintainers' GitHub handles @6uhrmittag and @VoidCrowned in the AI/hobby disclaimer (README, release pages, window titles) are wanted and stay;
    - no names of repack or crack groups, no hints about where the loose install came from — describe it only as "a regular (loose, unpacked) folder install";
    - the loose install's in-game profile name must not appear in public screenshots: **pixelate the race-HUD leaderboard** (fractions of a 16:9 frame: x 0.775–0.972, y 0.105–0.285) in every race screenshot before committing it; check with OCR afterwards;
    - wording: "decoded / reverse-engineered", not "cracked".
@@ -113,7 +113,6 @@ Open work lives in the issues (each carries the facts, file paths and a plan): h
 - **Unlocked:** #6 the 19 untested options, #7 FOV slider via memory
 - **Reach:** #8 Steam build, #15 NexusMods checklist (tools), #19 CI: per-mod builds + automated GitHub releases, #20 one NexusMods page per mod
 - **Research:** #10 Playground Archive, #11 boot scripts, #13 audio, #14 models, #18 memory on the loose build
-- **Docs:** #21 big disclaimer (~99 % AI-written hobby project, nothing guaranteed) — the maintainers' GitHub handles @6uhrmittag and @VoidCrowned are an approved exception to rule 5
 - **Quality:** #9 BC7 modes, #12 harness improvements, #16 Car Companion real stats, #17 party texts for 9 languages
 
 ---

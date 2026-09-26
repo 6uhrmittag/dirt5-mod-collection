@@ -1,5 +1,12 @@
 # DIRT 5 mods & research — by macha
 
+> [!WARNING]
+> **Read this first.**
+> - **About 99 % of the code, tools and docs in this repository were written by an AI** (Claude Code), directed and play-tested by us. We did not write most of this code ourselves and can't vouch for every line.
+> - This is a **hobby project**: [@6uhrmittag](https://github.com/6uhrmittag) and [@VoidCrowned](https://github.com/VoidCrowned) enjoy DIRT 5 very, very much and just wanted a bit more variety in this lovely game.
+> - **Nothing is guaranteed** — no warranty, no support promise, no roadmap. Things may break, may not work on your version of the game, or may mess up your game data (there is a *Restore vanilla* button; keep your own backups anyway).
+> - Offline only. Not affiliated with or endorsed by Codemasters or EA. No game files are included.
+
 The first mod tools for **DIRT 5** (Codemasters, 2020): a mod loader, a launcher for the game's hidden developer options, a pile of silly splitscreen party mods, and the reverse-engineering notes that made it possible. Built for our own couch sessions, shared for anyone who wants to take the game apart too.
 
 > **Personal & experimental.** Offline single-player/splitscreen only — never take modded data online. Not affiliated with or endorsed by Codemasters or EA. This repository contains **no game files**: every mod is generated from *your own* copy of the game at install time.

@@ -1,5 +1,11 @@
 # D5ML — the DIRT 5 Mod Loader
 
+> **⚠ Read this first.**
+> - **About 99 % of the code, tools and docs were written by an AI** (Claude Code), directed and play-tested by us. We did not write most of this code ourselves and can't vouch for every line.
+> - **Hobby project:** [@6uhrmittag](https://github.com/6uhrmittag) and [@VoidCrowned](https://github.com/VoidCrowned) enjoy DIRT 5 very, very much and just wanted a bit more variety in this lovely game.
+> - **Nothing is guaranteed** — no warranty, no support promise, no roadmap. Things may break, may not work on your version of the game, or may mess up your game data (*Restore vanilla* exists; keep your own backups anyway).
+> - Offline only. Not affiliated with or endorsed by Codemasters or EA. No game files are included.
+
 **The first mod loader for DIRT 5.** Drop mods into a folder, tick them, press APPLY, race. One click takes you back to vanilla. Your original game files are never touched.
 
 ![D5ML window](screenshots/d5ml-window.png)

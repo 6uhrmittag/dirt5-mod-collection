@@ -46,7 +46,7 @@ function Invoke-D5ml([string[]] $argv) {
 
 # --- window -------------------------------------------------------------------------------
 $form = New-Object $(if ($Snapshot) { 'D5SnapshotForm' } else { 'System.Windows.Forms.Form' }) -Property @{
-    Text = 'D5ML - DIRT 5 Mod Loader'; Width = 1100; Height = 760; StartPosition = 'CenterScreen'
+    Text = 'D5ML - DIRT 5 Mod Loader   (~99 % AI-written hobby project - nothing is guaranteed)'; Width = 1100; Height = 760; StartPosition = 'CenterScreen'
     BackColor = $C.bg; ForeColor = $C.fg; Font = New-Object System.Drawing.Font('Segoe UI', 10); AllowDrop = $true
 }
 $title = New-Object System.Windows.Forms.Label -Property @{
@@ -55,6 +55,11 @@ $title = New-Object System.Windows.Forms.Label -Property @{
 }
 $subtitle = New-Object System.Windows.Forms.Label -Property @{
     Text = 'the first DIRT 5 mod loader  -  tick mods, order them, APPLY, play offline'; Location = '120,26'; AutoSize = $true; ForeColor = $C.cyan
+}
+$aiNote = New-Object System.Windows.Forms.Label -Property @{
+    Text = 'hobby project by @6uhrmittag & @VoidCrowned, ~99 % written by an AI - nothing is guaranteed, keep backups, offline only'
+    Location = '122,46'; AutoSize = $true; ForeColor = [System.Drawing.Color]::Silver; UseMnemonic = $false
+    Font = New-Object System.Drawing.Font('Segoe UI', 8.5)
 }
 $list = New-Object System.Windows.Forms.CheckedListBox -Property @{
     Location = '16,70'; Width = 360; Height = 470; BackColor = $C.panel; ForeColor = $C.fg; BorderStyle = 'None'
@@ -90,7 +95,7 @@ $btnLaunch = New-Button 'LAUNCH (offline)' 882 184 $true
 $btnGame = New-Object System.Windows.Forms.Button -Property @{ Text = 'Game folder...'; Location = '946,20'; Width = 120; Height = 30; FlatStyle = 'Flat' }
 $btnGame.FlatAppearance.BorderColor = $C.cyan
 $status = New-Object System.Windows.Forms.Label -Property @{ Location = '16,645'; Width = 1050; Height = 60; ForeColor = $C.yellow; UseMnemonic = $false }
-$form.Controls.AddRange(@($btnGame, $title, $subtitle, $list, $up, $down, $orderHint, $name, $meta, $desc, $preview, $log,
+$form.Controls.AddRange(@($btnGame, $title, $subtitle, $aiNote, $list, $up, $down, $orderHint, $name, $meta, $desc, $preview, $log,
         $btnCheck, $btnApply, $btnRestore, $btnInstall, $btnFolder, $btnUnlocked, $btnLaunch, $status))
 
 # --- state ----------------------------------------------------------------------------------
