@@ -113,6 +113,7 @@ Open work lives in the issues (each carries the facts, file paths and a plan): h
 - **Unlocked:** #6 the 19 untested options, #7 FOV slider via memory
 - **Reach:** #8 Steam build, #15 NexusMods checklist (tools), #19 CI: per-mod builds + automated GitHub releases, #20 one NexusMods page per mod
 - **Research:** #10 Playground Archive, #11 boot scripts, #13 audio, #14 models, #18 memory on the loose build
+- **Docs:** #21 big disclaimer (~99 % AI-written hobby project, nothing guaranteed) — the maintainers' GitHub handles @6uhrmittag and @VoidCrowned are an approved exception to rule 5
 - **Quality:** #9 BC7 modes, #12 harness improvements, #16 Car Companion real stats, #17 party texts for 9 languages
 
 ---
