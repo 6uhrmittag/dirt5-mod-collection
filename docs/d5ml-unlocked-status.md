@@ -2,6 +2,20 @@
 
 Ideas 1 and 3 from `docs/nexusmods-pitch.md`. Started 2026-09-25 (late night), built out 2026-09-26. This file is the resume point.
 
+## Resume here (2026-09-26, 20:40 — paused because the user needed the PC)
+
+Goal of the session: finish the 10 simplest GitHub issues, document everything in the issues. **Closed with full notes: #21, #17, #16, #19, #4, #5, #11.** Game data is vanilla, no game running.
+
+Still open, almost done (each has a progress comment with the details):
+
+1. **#3 new-livery** — `d5ml.py new-livery` works (dry run 79/92 cars; in-game the Peugeot 306 Maxi showed our striped livery, `docs/new-livery-peugeot.jpg`). The first test cloned a RaceNet livery (tile asked for a RaceNet sign-in) → fixed: non-RaceNet source + `isRacenet: false`. **To do:** one harness run to confirm the fixed tile is selectable and races:
+   `.\scripts\Test-Dirt5Mod.ps1 -D5ml peugeot_306_maxi-livery-04 -CarClassNext 1 -LiveryRight 4 -LocationRight 2 -TrackRight 2 -Label peugeot_livery04_greece` (the local mod `mods/peugeot_306_maxi-livery-04` exists; recreate with `python scripts\d5ml.py new-livery peugeot_306_maxi --png <any png>`). Then post the note and close.
+2. **#12 harness** — `-LocationRight/-TrackRight/-CarClassNext/-CarRight` verified in-game (Greece → Kalabaka Town / Kastraki Village, Peugeot = first car of 90s Rally); focus pause fixed (process-id check; the reruns recorded 147/147 frames). **To do:** watch one `paused … / resumed after N s` log line (click another window for ~10 s during a run), then close. Reruns done: wackelpudding 1:14.3, windschatten 1:08.8.
+3. **#6 options** — `docs/unlocked-options.json` now 10 verified / 8 no-effect / 11 untested, every entry with a dated note. **To do:** post the summary, open the couch-session checklist issue (the human-only options), close. Optional: `unlockamd` (needs the CLASS tile to reach the Citroën C3 class), `careercheatcode` (changes the Career start page — look for unlocked chapters).
+4. Then: bump `unlocked` in `release.json` to 1.1.0 + changelog in `docs/release/Unlocked.md` (option statuses changed) and push → CI releases it.
+
+Follow-ups created this session: #22 language dropdown, #23 human-like driving, #24 new AI drivers, #25 track name table.
+
 ## Release state (2026-09-26)
 
 | | D5ML (mod loader) | DIRT 5 Unlocked (hidden options) |

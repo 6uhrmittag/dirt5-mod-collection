@@ -121,4 +121,5 @@ The harness launches with the mod + `--autopilotall`, drives the menus (every pa
 | `partytext` | 1:16.0 | 0 | in-game UI: `FREIBIER!`, `NOCH EINS!!` |
 | `partytext_xl` | 1:14.9 | 0 | in-game UI: `ESC GO TO BED`, `ONE MORE RACE!!` (grown, relocated files) |
 | `uwumax` | – | – | harness page check failed (fixed since); screenshots prove the UwU title texture + `CAWEEW … AWCADE`, `WTN STAWT` |
-| `wackelpudding`, `windschatten` | – | – | re-run: screenshots stopped when the game lost focus |
+| `wackelpudding=0.12` | 1:14.3 | 0 | ≈ vanilla: the autopilot soaks up soft suspension (re-run 2026-09-26) |
+| `windschatten=6` | **1:08.8** | 0 | −5 s: the slipstream tows you along (re-run 2026-09-26) |

@@ -61,6 +61,9 @@ Framing for anything public: **personal & experimental, offline only, not affili
 - **Harness quirks:** frames are only captured while the game has focus (popups or user clicks → skipped frames; the log says `recorded X of Y`); OCR can't read the page titles (display font) — pages are recognised by their button bars; the race clock OCR misreads single digits (`01:14` → `02:14`), `Get-LapTimes` repairs that (`-Reanalyze <run dir>` recomputes old runs).
 - **Background monitors:** watch an explicit output file path (not "newest file", which can pick the monitor's own output); stop old monitors before arming new ones for the same run.
 - **Releasing = bump a version and push to main.** Tools: `release.json`; mods: `version` in `mods/_example-*/mod.json`. `release.yml` publishes every unit whose tag (`d5ml/vX`, `unlocked/vX`, `mod/<id>/vX`) doesn't exist yet; only D5ML is marked "Latest". `python scripts/release_ci.py --dry` shows the plan, `--build` builds locally. `ci.yml` runs `check_repo.py` (public-safety token hashes, no game files, JSON/mod validation, NUL/tab hygiene), the PowerShell parser and the C# builds on every push.
+- **`.loc` ids = FNV-1a-64 of the LocID name** (`ID_LONG_ADELE_JACQUET`), sorted table, entry count u32 right before the first entry → new texts are just new entries (`text` key in mod.json). Same hash everywhere: car/livery Guids, driver Guids, texture name hashes.
+- **Results tables and leaderboards show the player's profile name** — pixelate that row/box in anything public (rule 5); AI name tags above cars are safe.
+- **The user may come back to the PC mid-chain:** if runs start failing with focus errors or the foreground is another app, stop the chain, close the harness game, restore vanilla — and resume when they say so.
 - **CJK fonts are subsets:** a character the vanilla Japanese/Korean/Chinese text never uses renders as a red box. `_loc_set_ids` warns; pick words the game already uses. `--language <code>` forces a UI language for tests.
 - **Markdown:** one paragraph = one source line (a local hook blocks hard-wrapped paragraphs).
 - **Decisions belong to the user:** ask with clickable options before outward-facing or hard-to-undo steps (creating repos, pushing, deleting history); yesterday's OK is not today's OK — except the standing launch permission above.
@@ -76,12 +79,15 @@ Framing for anything public: **personal & experimental, offline only, not affili
 .\scripts\Send-Dirt5Input.ps1 -Hold 'W:3000','W+D:600' -Shot race -ShotEvery 700
 .\scripts\Test-Dirt5Mod.ps1 -Mods glatteis                # unattended ~4.5 min, results in extracted\modtests\
 .\scripts\Test-Dirt5Mod.ps1 -D5ml _example-trackside-takeover -GameArgs '--noitemlocks' -LiveryRight 2
+.\scripts\Test-Dirt5Mod.ps1 -Mods gravity=-0.6 -LocationRight 2 -TrackRight 2      # Greece, 3rd track (0 = Brazil, 1 = China, ...)
+.\scripts\Test-Dirt5Mod.ps1 -D5ml my-livery -CarClassNext 1 -LiveryRight 5          # first car of the next class, 4th livery
 .\scripts\Test-Dirt5Mod.ps1 -Summary                      # results.csv table
 pwsh -File scripts\D5ML.ps1 -Snapshot shot.png -Select a,b    # render a window to PNG without focus
 ```
 
 - Input: SendInput **scan codes** (DirectInput8). Keys need ~1 s after focusing. Menus: arrows, `ENTER` select, `ESC` back; driving: **W** throttle (not arrow-up), **A/D** steer, `TAB` reset.
 - Menu path to a race: title `ENTER` → OK the "latest updates" notice → `DOWN DOWN ENTER` (Arcade) → `ENTER` (Free Play) → `DOWN ENTER` (Start Event) → `ENTER` (car) → `ENTER` (livery; `RIGHT`×n picks another) → ~20 s load → `ENTER` skips the intro.
+- Event Setup opens with the LOCATION tile selected: `ENTER` → country strip (Brazil, China, Greece, Italy, Morocco, Norway, …), `RIGHT`×n, `ENTER` → that country's track strip, `RIGHT`×n, `ENTER` → back on the tiles. The strip labels use a display font OCR can't read, so the harness counts presses and logs the race intro text (readable). Car page: `E`/`Q` next/previous class; a fresh profile owns only the first car of each class (others show BUY; `--nocashlocks` makes them free).
 - Free Play default event: Land Rush, Rio Seafront, Lancia 037 Evo 2, 3 laps, 12 cars. Vanilla autopilot lap 1 ≈ **1:14**. Rio has no big jumps (gravity mods need another track). Lancia liveries 02/03 are rank-locked on a fresh profile (`--noitemlocks` unlocks them).
 - `--nosave` for every test; `--releasefps` overlay is in the frames (harmless); `--nonetworkerrors` hides the offline popups.
 

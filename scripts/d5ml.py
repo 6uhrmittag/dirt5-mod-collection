@@ -622,7 +622,9 @@ def cmd_new_livery(car, png=None):
     db = [o for o in json.loads(idx.read(idx.find(LIVERY_DB)).rstrip(b"\0"))["objectInstances"] if o.get("type") == "LvrDta"]
     # texture liveries: database Name == texture name (any case) and index == its number (212 of 212)
     by_name = {o["Name"].lower(): o for o in db}
-    src_n = next((n for n in reversed(have) if f"{car}_livery_{n:02d}" in by_name), None)
+    cands = [n for n in reversed(have) if f"{car}_livery_{n:02d}" in by_name]
+    # prefer a normal livery as the source (2 of 391 are RaceNet rewards, hidden without a sign-in)
+    src_n = next((n for n in cands if not by_name[f"{car}_livery_{n:02d}"].get("isRacenet")), cands[0] if cands else None)
     if src_n is None:
         raise SystemExit(f"{car}: its livery textures have no livery-database entry (unused or editor-recipe car)")
     src = by_name[f"{car}_livery_{src_n:02d}"]
@@ -650,7 +652,7 @@ def cmd_new_livery(car, png=None):
         "clone": [{"from": f"{car}_livery_{src_n:02d}", "to": new, "in": LIVERY_DIR}],
         "json": [{"file": LIVERY_DB, "clone_object": {"match": {"Name": src["Name"]}, "set": {
             "Name": new_db_name, "index": index, "Recipe Path": "", "Event Unlock": [], "Sponsor": 0, "SponsorRank": 0,
-            "PlayerLevel": 0, "Entitlement": 0}}}],
+            "PlayerLevel": 0, "Entitlement": 0, "isRacenet": False}}}],     # RaceNet liveries want a sign-in
         "generate": [{"target": f"{LIVERY_DIR}{new}.gtx", "steps": steps}],
         "game_build": build_stamp(idx),
     }

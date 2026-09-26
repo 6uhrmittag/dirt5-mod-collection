@@ -22,13 +22,15 @@
           "flag": "pausetimeofday",
           "label": "Freeze time of day",
           "help": "Pause the environment controller",
-          "status": "untested"
+          "status": "untested",
+          "tested": "2026-09-26: one run, but the time of day hardly moves in 2 min of Free Play anyway - needs a long race to judge"
         },
         {
           "flag": "crowdenabled",
           "label": "Force the crowd on",
           "help": "Force the crowd on (it is otherwise controlled via EvoTweak)",
-          "status": "untested"
+          "status": "no-effect",
+          "tested": "2026-09-26: Free Play at Rio Seafront - the crowd at the start and along the track looks the same as without it (the crowd is already on there)"
         }
       ]
     },
@@ -52,32 +54,37 @@
           "flag": "nowrongwayrtt",
           "label": "No 'wrong way' reset rule",
           "help": "Disables Wrong way RTT Rule in all game modes",
-          "status": "untested"
+          "status": "untested",
+          "tested": "needs someone driving the wrong way (autopilot never does)"
         },
         {
           "flag": "endeventearly",
           "label": "End every event after 15 s",
           "help": "End the event prematurely after 15 seconds",
-          "status": "untested"
+          "status": "no-effect",
+          "tested": "2026-09-26: the Land Rush race ran on past lap 1 (1:12.8), no end after 15 s"
         },
         {
           "flag": "idontwanttorace",
           "label": "Skip racing, finish 1st",
           "help": "Skips racing playing state and should always finish the primary player in first.",
-          "status": "untested",
-          "nosave": true
+          "status": "verified",
+          "nosave": true,
+          "tested": "2026-09-26: START EVENT goes straight to the results table (no race) - handy to test result and reward screens"
         },
         {
           "flag": "vehicleselectoneplayer",
           "label": "P1 picks the cars for everyone (splitscreen)",
           "help": "Controls all the players in vehicle selection page with primary player input",
-          "status": "untested"
+          "status": "untested",
+          "tested": "needs splitscreen with two controllers"
         },
         {
           "flag": "hapticsoff",
           "label": "No controller rumble",
           "help": "Turn off all haptic feedback",
-          "status": "untested"
+          "status": "untested",
+          "tested": "needs a human with a controller"
         }
       ]
     },
@@ -88,8 +95,9 @@
           "flag": "nocashlocks",
           "label": "Everything purchasable is free",
           "help": "Make all purchasable items free",
-          "status": "untested",
-          "nosave": true
+          "status": "verified",
+          "nosave": true,
+          "tested": "2026-09-26: every car in the Free Play vehicle select loses its lock and price (the owned-first order changes too)"
         },
         {
           "flag": "noitemlocks",
@@ -103,35 +111,40 @@
           "flag": "unlockallentitlements",
           "label": "All entitlement cars/items",
           "help": "Unlocks all entitlement controled objects (vehicles, player card items etc)",
-          "status": "untested",
-          "nosave": true
+          "status": "verified",
+          "nosave": true,
+          "tested": "2026-09-26: the four DLC content packs on the Career page switch from \"Microsoft Store\" locks to playable (0/75), and the currency jumps from 10 535 to 160 535 (not saved with --nosave)"
         },
         {
           "flag": "careercheatcode",
           "label": "Whole career unlocked",
           "help": "Sets all of Career to unlocked",
           "status": "untested",
-          "nosave": true
+          "nosave": true,
+          "tested": "2026-09-26: Career opens on the Throwdowns / Tutorial page instead of the Ignition event map (so it changes the career state), but an unlocked chapter was not seen yet"
         },
         {
           "flag": "allowdebugvehicles",
           "label": "Debug vehicles selectable",
           "help": "Allow debug vehicles to be selected for a race",
-          "status": "untested",
-          "nosave": true
+          "status": "no-effect",
+          "nosave": true,
+          "tested": "2026-09-26: no extra (debug) cars in the three classes of the default Free Play event"
         },
         {
           "flag": "unlockamd",
           "label": "AMD Citroen C3 + AMD sponsor rep",
           "help": "Requested by AMD. Unlocks the Citroen C3 and grants full sponsor rep with AMD",
           "status": "untested",
-          "nosave": true
+          "nosave": true,
+          "tested": "2026-09-26: the three Free Play classes look unchanged; the Citroen C3 class was not reached"
         },
         {
           "flag": "showallrewards",
           "label": "Show all 3 rewards after events",
           "help": "Shows the max(3) amount of rewards for each category that can be shown in the post event rewards sequence",
-          "status": "untested"
+          "status": "no-effect",
+          "tested": "2026-09-26: the post-race reward screens (reached with --idontwanttorace) show the same podium / XP / REP / Dirt Dollars / reward steps as without it"
         }
       ]
     },
@@ -155,7 +168,8 @@
           "flag": "nomusic",
           "label": "No music",
           "help": "Don't play any music",
-          "status": "untested"
+          "status": "untested",
+          "tested": "needs a human listening (the harness has no audio check)"
         }
       ]
     },
@@ -178,7 +192,8 @@
           "flag": "skipftue",
           "label": "Skip first-time tutorial",
           "help": "Skip First Time User Experience sequence",
-          "status": "untested"
+          "status": "untested",
+          "tested": "needs a fresh profile (the first-time experience only runs once)"
         },
         {
           "flag": "nonetworkerrors",
@@ -190,25 +205,29 @@
           "flag": "noupsellnotifications",
           "label": "No DLC upsell popups",
           "help": "Stops the upsell notifications from being shown in the front end.",
-          "status": "untested"
+          "status": "untested",
+          "tested": "2026-09-26: no upsell popup showed in the offline front end with or without it - nothing visible to suppress"
         },
         {
           "flag": "unhealthyattitude",
           "label": "No health warning screen",
           "help": "Don't show the health warning",
-          "status": "untested"
+          "status": "no-effect",
+          "tested": "2026-09-26: the photosensitive-seizure warning still shows at boot (run without --skiplegals)"
         },
         {
           "flag": "noinactivitywarning",
           "label": "No inactivity warning",
           "help": "Disable the inactivity check",
-          "status": "untested"
+          "status": "untested",
+          "tested": "needs a long idle test (the inactivity timeout is unknown)"
         },
         {
           "flag": "nosave",
           "label": "Don't save the profile",
           "help": "Don't do any saving of profile data",
-          "status": "untested"
+          "status": "untested",
+          "tested": "used for every test run: the profile (Documents/My Games/DIRT5/user1/profile) was never touched; a control run without it was skipped on purpose (it would write the real profile)"
         }
       ]
     }

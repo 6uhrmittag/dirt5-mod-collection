@@ -25,6 +25,10 @@
 .EXAMPLE
     .\Test-Dirt5Mod.ps1 -Mods tipsy=2.5 -Label tipsy
 .EXAMPLE
+    .\Test-Dirt5Mod.ps1 -Mods gravity=-0.6 -LocationRight 2 -TrackRight 1   # another location/track (read back from the race intro)
+.EXAMPLE
+    .\Test-Dirt5Mod.ps1 -CarClassNext 1 -LiveryRight 5            # first car of the next class, 4th livery texture
+.EXAMPLE
     .\Test-Dirt5Mod.ps1 -Suite party           # every party preset back to back
 .EXAMPLE
     .\Test-Dirt5Mod.ps1 -Summary               # results table
@@ -35,6 +39,11 @@ param(
     [string[]] $GameArgs,          # extra game options, e.g. '--micromachinescamera'
     [string[]] $D5ml,              # D5ML mods (mods\<name>) to apply instead of -Mods recipes
     [int] $LiveryRight = 0,        # livery page: press RIGHT n times before confirming (2 = first livery texture)
+    [int] $CarClassNext = 0,       # car page: NEXT CLASS (E) n times first (a fresh profile owns the first car of each class)
+    [int] $CarRight = 0,           # car page: RIGHT n times (other cars of the class; unowned ones show BUY)
+    [int] $LocationRight = -1,     # Event Setup: open the LOCATION strip, RIGHT n times (0 = Brazil, 1 = China, 2 = Greece ...)
+    [int] $TrackRight = 0,         # ... then RIGHT n times in that location's TRACK strip (0 = its first track)
+    [int] $FocusWait = 180,        # recording pauses while the game isn't in the foreground, at most this many seconds
     [string] $Label,
     [int] $Seconds = 130,
     [ValidateSet('party', 'singles')] [string] $Suite,
@@ -52,6 +61,18 @@ $OutRoot = (Resolve-Path $OutRoot).Path
 $csv = Join-Path $OutRoot 'results.csv'
 $pidFile = Join-Path $OutRoot '.harness.pid'
 $clockCrop = '0.05,0.11,0.13,0.05'   # HUD race clock, top-left, fractions of the frame
+$intro = ''
+if (-not ('D5Harness.Focus' -as [type])) {
+    Add-Type -Namespace D5Harness -Name Focus -MemberDefinition @'
+[DllImport("user32.dll")] public static extern System.IntPtr GetForegroundWindow();
+[DllImport("user32.dll")] public static extern uint GetWindowThreadProcessId(System.IntPtr hWnd, out uint pid);
+'@
+}
+# by process, not by window handle: the game swaps its window during boot
+function Test-GameFocus([int] $gamePid) {
+    $fg = 0; [D5Harness.Focus]::GetWindowThreadProcessId([D5Harness.Focus]::GetForegroundWindow(), [ref] $fg) | Out-Null
+    $fg -eq $gamePid
+}
 
 function Get-LapTimes([string[]] $clock) {
     <# clock.txt lines "<frame>`t<ocr text>" -> @{ laps = seconds per finished lap; max = last clock } #>
@@ -197,9 +218,29 @@ try {
     Tap ENTER; Start-Sleep 2
     $t = Expect 'setup' 'STA[RW]T EVENT|NOCH EINS|ONE MO[RW]E'
     $track = if ($t -match 'RIO SEAFRONT|SEAFRONT') { 'Rio Seafront' } else { 'unknown track' }
+    if ($LocationRight -ge 0) {
+        # the page opens with the LOCATION tile selected; its strip and the TRACK strip use a display
+        # font OCR can't read, so we count presses and read the track off the race intro instead
+        Tap ENTER; Start-Sleep 2
+        if ($LocationRight) { Tap (@('RIGHT') * $LocationRight); Start-Sleep 1 }
+        Shot 'location_pick' | Out-Null
+        Tap ENTER; Start-Sleep 2
+        if ($TrackRight) { Tap (@('RIGHT') * $TrackRight); Start-Sleep 1 }
+        Shot 'track_pick' | Out-Null
+        Tap ENTER; Start-Sleep 2
+        Expect 'setup_track' 'STA[RW]T EVENT|NOCH EINS|ONE MO[RW]E' | Out-Null
+        $track = "location +$LocationRight, track +$TrackRight"
+        Log "track: $track"
+    }
     Tap DOWN, ENTER; Start-Sleep 2
     # page titles use a display font OCR can't read; the button bars it can
     Expect 'car' 'VEHIC[LW]E|NEXT C[LW]ASS|HAND[LW]ING|PE[RW]FO[RW]MANCE' | Out-Null
+    if ($CarClassNext -or $CarRight) {
+        for ($i = 0; $i -lt $CarClassNext; $i++) { Tap E; Start-Sleep 2 }
+        if ($CarRight) { Tap (@('RIGHT') * $CarRight); Start-Sleep 1 }
+        Shot 'car_pick' | Out-Null
+        Log "car: NEXT CLASS x$CarClassNext, RIGHT x$CarRight"
+    }
     Tap ENTER; Start-Sleep 2
     Expect 'livery' '[LW]IVE[RW]Y|C[RW]EATE' | Out-Null
     if ($LiveryRight) {        # slot 1 = default paint, then CREATE, then the livery textures
@@ -216,18 +257,26 @@ try {
     Start-Sleep 8; $sw.Restart(); $seen = $false
     while (-not $seen -and $sw.Elapsed.TotalSeconds -lt 60) {
         $t = ScreenText 'intro'
-        $seen = ($t -match '037|Evo|DYNAMIC|DAWN|BRAZIL') -and ($t -notmatch '[LW]IVE[RW]Y|SE[LW]ECT')
+        $seen = ($t -match '037|Evo|DYNAMIC|DAWN|DUSK|MORNING|AFTERNOON|EVENING|NIGHT|CLEAR|RAIN|SNOW|BRAZIL|CHINA|GREECE|ITALY|MOROCCO|NORWAY|NEPAL|AFRICA|USA|ARIZONA|NEW YORK') -and
+                 ($t -notmatch '[LW]IVE[RW]Y|SE[LW]ECT')
         if (-not $seen) { Start-Sleep 2 }
     }
     if (-not $seen) { throw "race intro not detected; last OCR: $t" }
-    Log 'race intro'
+    $intro = ($t -replace '\s+', ' ').Trim()
+    Log "race intro: $intro"
     Tap ENTER
     $sw.Restart(); $n = 0
     while ($sw.Elapsed.TotalSeconds -lt $Seconds) {
+        if (-not (Test-GameFocus $p.Id)) {
+            # the user clicked elsewhere or a popup took focus: screenshots would be skipped, so wait
+            $sw.Stop(); $since = Get-Date; Log 'paused: DIRT 5 is not in the foreground'
+            while (-not (Test-GameFocus $p.Id) -and ((Get-Date) - $since).TotalSeconds -lt $FocusWait) { Start-Sleep 1 }
+            if (-not (Test-GameFocus $p.Id)) { Log "no focus for $FocusWait s - stopping the recording"; break }
+            Log ("resumed after {0:0} s" -f ((Get-Date) - $since).TotalSeconds); $sw.Start()
+        }
         $n++; Shot ('f_{0:D3}' -f $n) | Out-Null
         Start-Sleep -Milliseconds 700
     }
-    # screenshots are skipped while the game isn't in the foreground (popups, the user clicking elsewhere)
     $saved = @(Get-ChildItem $dir -Filter 'f_*.png').Count
     $result.frames = $saved
     Log "recorded $saved of $n frames$(if ($saved -lt $n) { " ($($n - $saved) skipped: game was not in the foreground)" })"
@@ -263,7 +312,7 @@ if ($frames) {
 
 | | |
 |---|---|
-| mods | ``$(if ($Mods) { $Mods -join ' ' } else { 'vanilla' })`` |
+| mods / options | ``$(if ($result.mods) { $result.mods } else { 'vanilla' })`` |
 | when | $stamp |
 | status | $($result.status) |
 | lap 1 (standing start) | $($result.lap1) |
@@ -271,7 +320,8 @@ if ($frames) {
 | car resets (flips/crashes put back on track) | $($result.resets) |
 | frames | $($result.frames) |
 
-Event: Arcade Free Play default (Land Rush, Rio Seafront, Lancia 037 Evo 2, 12 cars), ``--autopilotall``.
+Event: Arcade Free Play$(if ($LocationRight -ge 0 -or $CarRight -or $CarClassNext) { " - location +$LocationRight, track +$TrackRight, class +$CarClassNext, car +$CarRight" } else { ' default (Land Rush, Rio Seafront, Lancia 037 Evo 2, 12 cars)' }), ``--autopilotall``.
+Race intro (OCR): $intro
 Clock OCR per frame: ``clock.txt``. Contact sheet: ``sheet.png``. Log: ``run.log``.
 "@ | Set-Content (Join-Path $dir 'report.md')
 [pscustomobject]$result | Export-Csv $csv -Append -NoTypeInformation
