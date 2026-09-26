@@ -33,7 +33,26 @@ The party launcher always adds `partytext` + `stammtisch` (skip with `-NoPartyTe
 | RESET TO TRACK | WO BIN ICH?!?! | AUF STRECKE SETZEN | WO BIN ICH DENN?!? |
 | the "latest game updates" nag at every boot | *Wasserpause! Trink zwischendurch ein Glas Wasser. Wer verliert, holt die Chips. Um 2 Uhr ist wirklich Schluss. Versprochen.* | | |
 
-`.loc` entries are `[u64 id][u32 byte length][UTF-8 text]`, so every replacement has exactly the original byte length (space-padded); all platform copies (`pc`, `ps4`, `xbox`) are patched.
+English and German keep their exact-length swaps above. **The other 7 languages** get the same jokes, translated (`PARTY_I18N` in `scripts/d5mod.py`), plus the water-break nag in each language:
+
+| UI text | French | Italian | Spanish | Portuguese (BR) | Japanese | Korean | Chinese (simpl.) |
+|---|---|---|---|---|---|---|---|
+| START EVENT | ENCORE UNE !! | ANCORA UNA!! | ¡¡OTRA MÁS!! | MAIS UMA!! | もう一杯！！ | 한 판 더!! | 再来一局！！ |
+| QUIT | AU DODO | A NANNA | A LA CAMA | CAMA | 寝る | 잘래 | 睡觉 |
+| NEW LAP! | SANTÉ !!! | CIN CIN!!! | ¡¡¡SALUD!!! | SAÚDE!!! | 乾杯！！！ | 건배!!! | 干杯！！！ |
+| FINAL LAP! | DERNIÈRE TOURNÉE ! | ULTIMO GIRO DI BIRRA! | ¡ÚLTIMA RONDA! | SAIDEIRA! | ラストオーダー！ | 마지막 주문! | 最后一轮！ |
+| FREE PLAY | TOURNÉE GÉNÉRALE | BIRRA GRATIS! | ¡BARRA LIBRE! | OPEN BAR! | 飲み放題 | 무한 리필 | 免费酒水！ |
+| RESTART | ON REMET ÇA | DI NUOVO! | OTRA VEZ | DE NOVO | もう一回 | 한 번 더 | 再来一次 |
+| RESET TO TRACK | OÙ SUIS-JE ?! | DOVE SONO?! | ¿¡DÓNDE ESTOY!? | ONDE EU ESTOU?! | ここどこ？！ | 여기 어디?! | 我在哪？！ |
+
+How it works (and how to translate your own texts):
+
+- `.loc` entries are `[u64 id][u32 byte length][UTF-8 text]`. **The ids are the same in every language**, so one id table (`LOC_ID`) finds "QUIT" in French, Korean, ... alike.
+- English/German use same-length swaps (space-padded). The other languages use `_loc_set_ids`: the entry table is rebuilt with texts of **any length** and the container's "bytes remaining" u32 is updated; d5mod relocates the grown file (`resize`). All platform copies (`pc`, `ps4`, `xbox`) are patched.
+- `stammtisch`, `lobby` and `uwu` (driver names + UI speak) cover the 6 Latin-script languages; Japanese, Korean and Chinese write driver names in their own script, so they stay vanilla there.
+- **CJK fonts only contain the glyphs the vanilla text uses.** A new character renders as a red box (seen in-game: 菓 in Japanese, 喝 and 啤 in Chinese). `_loc_set_ids` now warns: `warning: 喝 not in the vanilla text of this language - may show as a red box` — pick a word whose characters the game already uses.
+- **Test any language without changing Windows:** the hidden option `--language <code>` (`eng ger fre ita spa bra jap kor sim`) forces the game language. `scripts/Start-Dirt5Modded.ps1 -ExtraArgs '--language','fre'`. Verified in-game 2026-09-26: French, Italian, Spanish, Portuguese show all four test screens (water-break nag, main-menu `ESC` hint, arcade `FREE PLAY`, event `START EVENT`); Japanese, Korean, Chinese show the nag and the `ESC` hint (the scripted menu walk ended up in Career there, so `FREE PLAY`/`START EVENT` weren't screenshotted — same code path).
+
 
 ## Presets
 
@@ -65,7 +84,7 @@ The party launcher always adds `partytext` + `stammtisch` (skip with `-NoPartyTe
 | `flugstunde` | 4 | × in-air `PitchStrength/RollStrength/YawStrength`, air control from 1 G | 3 |
 | `norubberband` | 1 | AI catch-up grip bonus off (stock 1.35 / 1.85) | 1 (AI json) |
 | `clumsyai` | 0.6 | AI `mistake_probability` (stock 0.05..0.25) | 1 (AI json) |
-| `partytext` | – | menu/HUD strings, English + German (table above) | 6 (`.loc`) |
+| `partytext` | – | menu/HUD strings in all 9 languages (tables above) | 27 (`.loc`) |
 | `partytext_xl` | – | experimental: *longer* pub texts (QUIT → GO TO BED / INS BETT GEHEN, FINAL LAP → LAST ORDERS, MATE! / LETZTE RUNDE, DANN BETT!) — the files grow and get relocated into new chunks | 6 (`.loc`) |
 | `stammtisch` | – | all 57 AI driver names → pub regulars (A. Jacquet → Sandmann, G. Spengler → Tresen-Toni, N. Krahmer → Der Wirt, B. Durand → Kalle …), same byte length, deterministic | 6 (`.loc`) |
 | `lobby` | – | all 57 AI drivers → a Discord lobby (xXDriftGodXx, Touch Grass, Big Chungus, Ping 999ms, Hacker!!1 …) — pick this *or* `stammtisch` | 6 (`.loc`) |

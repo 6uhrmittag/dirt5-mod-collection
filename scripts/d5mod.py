@@ -197,6 +197,67 @@ LOBBY = ["xXDriftGodXx", "N00bSlayer", "Sk8erBoi", "Touch Grass", "Big Chungus",
          "Glitch", "Uwu", "Owo", "Nerf This", "Hacker!!1", "Low FPS", "Wifi Down", "Tutorial"]
 
 
+# --- party texts for the other 7 UI languages (by .loc entry id - ids are identical in every language) ---
+LOC_ID = {"START EVENT": 0x6BFA258A7181FA60, "QUIT": 0x2583DC7A7C6D85CE, "NEW LAP!": 0xD8E27E4EA9CFA563,
+          "FINAL LAP!": 0x5FD44593336E99BD, "FREE PLAY": 0x9B2C45BBE994477E, "RESTART": 0x6267161A2A61F5C4,
+          "RESET TO TRACK": 0xAEF3CC2E73228978, "UPDATE NAG": 0xD6A0981F5E29968C}
+PARTY_I18N = {
+    "fre": {"START EVENT": "ENCORE UNE !!", "QUIT": "AU DODO", "NEW LAP!": "SANTÉ !!!", "FINAL LAP!": "DERNIÈRE TOURNÉE !",
+            "FREE PLAY": "TOURNÉE GÉNÉRALE", "RESTART": "ON REMET ÇA", "RESET TO TRACK": "OÙ SUIS-JE ?!",
+            "UPDATE NAG": "Pause eau ! Bois un verre d'eau de temps en temps. Le perdant va chercher les chips. À 2 h, c'est vraiment fini. Promis."},
+    "ita": {"START EVENT": "ANCORA UNA!!", "QUIT": "A NANNA", "NEW LAP!": "CIN CIN!!!", "FINAL LAP!": "ULTIMO GIRO DI BIRRA!",
+            "FREE PLAY": "BIRRA GRATIS!", "RESTART": "DI NUOVO!", "RESET TO TRACK": "DOVE SONO?!",
+            "UPDATE NAG": "Pausa acqua! Bevi un bicchiere d'acqua ogni tanto. Chi perde va a prendere le patatine. Alle 2 si chiude davvero. Promesso."},
+    "spa": {"START EVENT": "¡¡OTRA MÁS!!", "QUIT": "A LA CAMA", "NEW LAP!": "¡¡¡SALUD!!!", "FINAL LAP!": "¡ÚLTIMA RONDA!",
+            "FREE PLAY": "¡BARRA LIBRE!", "RESTART": "OTRA VEZ", "RESET TO TRACK": "¿¡DÓNDE ESTOY!?",
+            "UPDATE NAG": "¡Pausa de agua! Bebe un vaso de agua de vez en cuando. Quien pierda trae las patatas. A las 2 se acaba de verdad. Prometido."},
+    "bra": {"START EVENT": "MAIS UMA!!", "QUIT": "CAMA", "NEW LAP!": "SAÚDE!!!", "FINAL LAP!": "SAIDEIRA!",
+            "FREE PLAY": "OPEN BAR!", "RESTART": "DE NOVO", "RESET TO TRACK": "ONDE EU ESTOU?!",
+            "UPDATE NAG": "Pausa pra água! Beba um copo d'água de vez em quando. Quem perder busca os salgadinhos. Às 2 acaba de verdade. Prometido."},
+    "jap": {"START EVENT": "もう一杯！！", "QUIT": "寝る", "NEW LAP!": "乾杯！！！", "FINAL LAP!": "ラストオーダー！",
+            "FREE PLAY": "飲み放題", "RESTART": "もう一回", "RESET TO TRACK": "ここどこ？！",
+            "UPDATE NAG": "水分補給タイム！ときどき水を一杯飲もう。負けた人はおかしを買いに行く。2時で本当におしまい。約束だよ。"},
+    "kor": {"START EVENT": "한 판 더!!", "QUIT": "잘래", "NEW LAP!": "건배!!!", "FINAL LAP!": "마지막 주문!",
+            "FREE PLAY": "무한 리필", "RESTART": "한 번 더", "RESET TO TRACK": "여기 어디?!",
+            "UPDATE NAG": "물 마실 시간! 가끔 물 한 잔씩 마셔요. 지는 사람이 과자 사 오기. 2시엔 진짜 끝. 약속!"},
+    "sim": {"START EVENT": "再来一局！！", "QUIT": "睡觉", "NEW LAP!": "干杯！！！", "FINAL LAP!": "最后一轮！",
+            "FREE PLAY": "免费酒水！", "RESTART": "再来一次", "RESET TO TRACK": "我在哪？！",
+            "UPDATE NAG": "补水时间！时不时来杯水。输的人去买薯片。两点真的结束。说好了。"},
+}
+LATIN_LANGS = ("eng", "ger", "fre", "ita", "spa", "bra")      # "X. Surname" drivers + uwu make sense here
+
+
+def _loc_set_ids(texts):
+    """Set .loc entries by id -> new UTF-8 text, any length: the entry table is rebuilt and the
+    container's 'bytes remaining' u32 is updated. Entries not in `texts` stay byte-identical."""
+    def t(text, _v):
+        raw = text.encode("latin1")
+        size_at = next(p for p in range(0x40, 0x100) if struct.unpack_from("<I", raw, p)[0] == len(raw) - p - 4)
+        ents = _loc_entries(raw)
+        # CJK fonts only carry the glyphs the vanilla text uses - anything else renders as a red box
+        known = set(raw.decode("utf-8", "ignore"))
+        missing = sorted({c for s in texts.values() for c in s if ord(c) >= 0x250 and c not in known})
+        if missing:
+            print(f"  warning: {''.join(missing)} not in the vanilla text of this language - may show as a red box")
+        out = bytearray(raw[:ents[0][0] - 12])
+        n = 0
+        for off, ln in ents:
+            eid = struct.unpack_from("<Q", raw, off - 12)[0]
+            body = raw[off:off + ln]
+            if eid in texts:
+                body = texts[eid].encode("utf-8")
+                n += 1
+            out += struct.pack("<QI", eid, len(body)) + body
+        struct.pack_into("<I", out, size_at, len(out) - size_at - 4)
+        return bytes(out).decode("latin1"), n
+    t.resize = True
+    return t
+
+
+def _party_i18n_targets():
+    return [(f"{LOC}{lang}.loc", _loc_set_ids({LOC_ID[k]: v for k, v in table.items()})) for lang, table in PARTY_I18N.items()]
+
+
 def _rename_ai(pool):
     """Every 'X. Surname' loc entry -> a pick from `pool` of at most the same byte length
     (space-padded; the same original name always gets the same pick)."""
@@ -323,18 +384,18 @@ MODS = {
                    "earlier - steer your car mid-air (best with gravity)", 4.0,
                    [(ALL, _scale("PitchStrength", "RollStrength", "YawStrength")),
                     (ALL, _set("ActivateBelow_G", 1.0))]),
-    "partytext": ("pub UI (English + German): START EVENT -> NOCH EINS!!, QUIT -> BETT, "
-                  "NEW LAP -> PROST!!!, FINAL LAP -> LAST ORDER, the update nag -> water break", 1.0,
-                  [(LOC + "eng.loc", _loc_swap(PARTY_ENG)), (LOC + "ger.loc", _loc_swap(PARTY_GER))]),
+    "partytext": ("pub UI in all 9 languages: START EVENT -> NOCH EINS!! / ENCORE UNE !! / もう一杯！！, "
+                  "QUIT -> BETT, NEW LAP -> PROST!!!, FINAL LAP -> LAST ORDER / SAIDEIRA!, the update nag -> water break", 1.0,
+                  [(LOC + "eng.loc", _loc_swap(PARTY_ENG)), (LOC + "ger.loc", _loc_swap(PARTY_GER))] + _party_i18n_targets()),
     "stammtisch": ("the pub regulars race you: all 57 AI drivers renamed (Tante Erna, Korn-Klaus, "
-                   "Sandmann, Fahrer-Fritz ...), English + German UI", 1.0,
-                   [(LOC + "eng.loc", _rename_ai(STAMMTISCH)), (LOC + "ger.loc", _rename_ai(STAMMTISCH))]),
+                   "Sandmann, Fahrer-Fritz ...), all languages with latin driver names", 1.0,
+                   [(f"{LOC}{lang}.loc", _rename_ai(STAMMTISCH)) for lang in LATIN_LANGS]),
     "lobby": ("the AI field is a Discord lobby: xXDriftGodXx, Touch Grass, Big Chungus, "
               "Ping 999ms, Hacker!!1 ... (pick this OR stammtisch)", 1.0,
-              [(LOC + "eng.loc", _rename_ai(LOBBY)), (LOC + "ger.loc", _rename_ai(LOBBY))]),
-    "uwu": ("UwU mode: every English + German UI string and subtitle, r/l -> w "
+              [(f"{LOC}{lang}.loc", _rename_ai(LOBBY)) for lang in LATIN_LANGS]),
+    "uwu": ("UwU mode: every UI string and subtitle in EN/DE/FR/IT/ES/PT-BR, r/l -> w "
             "(STAWT EVENT, FWEE PWAY, Youw connection to the sewvews ...)", 1.0,
-            [(LOC + "eng.loc", _loc_map(_uwu)), (LOC + "ger.loc", _loc_map(_uwu))]),
+            [(f"{LOC}{lang}.loc", _loc_map(_uwu)) for lang in LATIN_LANGS]),
     "partytext_xl": ("EXPERIMENTAL resize test: LONGER pub texts (QUIT -> GO TO BED / INS BETT GEHEN, "
                      "FINAL LAP -> LAST ORDERS, MATE! / LETZTE RUNDE, DANN BETT!) - files grow, "
                      "get relocated into new chunks", 1.0,
