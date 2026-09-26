@@ -24,7 +24,7 @@ The first mod tools for **DIRT 5** (Codemasters, 2020): a mod loader, a launcher
 |---|---|---|
 | **D5ML** — mod loader | mod folders with loose files (any size, even brand-new files), PNG textures in every format the game uses, colour-grading LUTs, effects, database patches; load order, conflicts, one-click restore | [`docs/release/D5ML.md`](docs/release/D5ML.md), [`mods/README.md`](mods/README.md) |
 | **DIRT 5 Unlocked** | launcher for the game's hidden developer command-line options (autopilot, no HUD, unlocks …) with honest ✓/?/✗ status per option | [`docs/release/Unlocked.md`](docs/release/Unlocked.md) |
-| **Example mods** | Trackside Takeover, Synthwave 037, a new 4th livery, Night Vision Racing, Vivid, Bedtime Arcade | [`mods/`](mods/) |
+| **Example mods** | Trackside Takeover, Synthwave 037, a new 4th livery, Night Vision Racing, Vivid, Rival Roster, Bedtime Arcade | [`mods/`](mods/) |
 | **Party mods** | physics/AI/UI recipes for splitscreen nights: moon gravity, black ice, tipsy cars, UwU menus, pub texts, a party launcher that picks by the clock | [`docs/party-mods.md`](docs/party-mods.md) |
 | **Test harness** | unattended in-game test of a mod: launch → menus → autopilot race → lap time + crash count via OCR | `scripts/Test-Dirt5Mod.ps1` |
 | **Companion apps** | second-monitor session wall, car/track stats overlay, read-only save inspector (C#) | [Companion apps](#companion-apps-c) |

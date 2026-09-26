@@ -229,7 +229,9 @@ LATIN_LANGS = ("eng", "ger", "fre", "ita", "spa", "bra")      # "X. Surname" dri
 
 def _loc_set_ids(texts):
     """Set .loc entries by id -> new UTF-8 text, any length: the entry table is rebuilt and the
-    container's 'bytes remaining' u32 is updated. Entries not in `texts` stay byte-identical."""
+    container's 'bytes remaining' u32 is updated. Ids the file doesn't have yet are ADDED: the
+    table is sorted by id and its entry count is the u32 right before the first entry.
+    Entries not in `texts` stay byte-identical. Entry id = FNV-1a-64 of the LocID name."""
     def t(text, _v):
         raw = text.encode("latin1")
         size_at = next(p for p in range(0x40, 0x100) if struct.unpack_from("<I", raw, p)[0] == len(raw) - p - 4)
@@ -239,14 +241,23 @@ def _loc_set_ids(texts):
         missing = sorted({c for s in texts.values() for c in s if ord(c) >= 0x250 and c not in known})
         if missing:
             print(f"  warning: {''.join(missing)} not in the vanilla text of this language - may show as a red box")
-        out = bytearray(raw[:ents[0][0] - 12])
+        rows = [[struct.unpack_from("<Q", raw, off - 12)[0], raw[off:off + ln]] for off, ln in ents]
         n = 0
-        for off, ln in ents:
-            eid = struct.unpack_from("<Q", raw, off - 12)[0]
-            body = raw[off:off + ln]
-            if eid in texts:
-                body = texts[eid].encode("utf-8")
+        for r in rows:
+            if r[0] in texts:
+                r[1] = texts[r[0]].encode("utf-8")
                 n += 1
+        have = {r[0] for r in rows}
+        new = [[eid, s.encode("utf-8")] for eid, s in texts.items() if eid not in have]
+        out = bytearray(raw[:ents[0][0] - 12])
+        if new:
+            count_at = len(out) - 4
+            if struct.unpack_from("<I", out, count_at)[0] != len(rows):
+                raise SystemExit("unexpected .loc header (entry count) - can't add new texts to this file")
+            rows = sorted(rows + new, key=lambda r: r[0])          # stable: duplicate ids keep their order
+            struct.pack_into("<I", out, count_at, len(rows))
+            n += len(new)
+        for eid, body in rows:
             out += struct.pack("<QI", eid, len(body)) + body
         struct.pack_into("<I", out, size_at, len(out) - size_at - 4)
         return bytes(out).decode("latin1"), n
@@ -280,8 +291,10 @@ def _rename_ai(pool):
 
 
 def _loc_entries(raw: bytes):
-    """(offset, length) of every [u64 id][u32 len][text] entry; the table runs to EOF."""
-    for start in range(0, 4096):
+    """(offset, length) of every [u64 id][u32 len][text] entry; the table runs to EOF and the u32
+    right before it is the entry count (without that check a wrong start can re-sync into the real
+    table - it did in ps4/sim, xbox/fre and xbox/ita)."""
+    for start in range(4, 4096):
         out, i = [], start
         while i + 12 <= len(raw):
             ln = struct.unpack_from("<I", raw, i + 8)[0]
@@ -289,7 +302,7 @@ def _loc_entries(raw: bytes):
                 break
             out.append((i + 12, ln))
             i += 12 + ln
-        if i == len(raw) and len(out) > 1000:
+        if i == len(raw) and len(out) > 1000 and struct.unpack_from("<I", raw, start - 4)[0] == len(out):
             return out
     raise SystemExit("not a .loc string table")
 

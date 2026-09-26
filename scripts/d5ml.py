@@ -22,6 +22,8 @@ starter kit:
   python d5ml.py extract <mod> <glob|word>  copy game files into the mod to edit them;
                                             .gtx textures arrive as editable PNGs (--raw: keep .gtx);
                                             car liveries also get a *.guide.png (paint mask overlay)
+  python d5ml.py new-livery <car> [--png f] a NEW livery slot for any car (clone + database entry,
+                                            unlocked); --png paints it, else a colour shift
 
 Engine: scripts/d5mod.py (original packs are never written; changed files go into
 pack slot 0, files that change size are relocated into new chunks; restore = vanilla).
@@ -152,7 +154,8 @@ EFFECT_PARAMS = {  # effect -> allowed / required step keys (besides "effect")
     "grade": {"allowed": {"saturation", "contrast", "brightness", "gamma", "hue", "tint", "mix"}, "required": set()},
     "lut": {"allowed": {"source", "mix"}, "required": {"source"}},
 }
-MOD_KEYS = {"name", "version", "author", "description", "recipes", "generate", "clone", "json", "game_build", "url", "license"}
+MOD_KEYS = {"name", "version", "author", "description", "recipes", "generate", "clone", "json", "text", "game_build", "url",
+            "license"}
 
 
 def validate_meta(name, meta):
@@ -169,6 +172,15 @@ def validate_meta(name, meta):
             raise SystemExit(f"{where}: unknown key(s) {', '.join(sorted(bad))} (use target, exclude, steps)")
     if not isinstance(meta.get("recipes", []), list):
         raise SystemExit(f"{name}/mod.json: \"recipes\" must be a list, e.g. [\"uwu\", \"tipsy=2\"]")
+    text = meta.get("text", {})
+    tables = ([text] if not any(isinstance(v, dict) for v in text.values()) else list(text.values())) if isinstance(text, dict) else [None]
+    if any(not isinstance(t, dict) or not all(isinstance(k, str) and isinstance(v, str) for k, v in t.items()) for t in tables):
+        raise SystemExit(f"{name}/mod.json: \"text\" must map LocID -> text, e.g. {{\"ID_SHORT_ADELE_JACQUET\": \"C. Handbrake\"}}, "
+                         f"or per language {{\"*\": {{...}}, \"ger\": {{...}}}}")
+    for j in meta.get("json", []):
+        for op in _ops(j.get("set_object")):
+            if not isinstance(op, dict) or "match" not in op or "set" not in op:
+                raise SystemExit(f"{name}/mod.json json {j.get('file')}: set_object needs \"match\" and \"set\"")
 
 
 def _generated(steps, mod_dir):
@@ -292,6 +304,27 @@ def fnv1a64(s: str) -> int:
     return h
 
 
+LANGS = ("bra", "eng", "fre", "ger", "ita", "jap", "kor", "sim", "spa")
+
+
+def loc_id(key: str) -> int:
+    """.loc entry id of a LocID name = FNV-1a-64 of the string (ID_LONG_ADELE_JACQUET -> "Adèle Jacquet";
+    driverdata/vehicledata point at these names). A literal "0x..." id works too."""
+    return int(key, 16) if key.lower().startswith("0x") else fnv1a64(key)
+
+
+def text_tables(text):
+    """mod.json "text" -> {lang: {entry id: text}}. {"ID_X": "..."} = every language;
+    {"*": {...}, "ger": {...}} = default + per-language overrides. Unknown ids become NEW entries."""
+    per_lang = bool(text) and all(isinstance(v, dict) for v in text.values())
+    out = {}
+    for lang in LANGS:
+        t = dict(text.get("*", {}), **text.get(lang, {})) if per_lang else dict(text)
+        if t:
+            out[lang] = {loc_id(k): v for k, v in t.items()}
+    return out
+
+
 def clone_pairs(c, known):
     """clone {"from": "lancia_037_livery_03", "to": "lancia_037_livery_04", "in": "data:.../"}:
     every game file in `in` whose name starts with `from` -> same name with `to` instead."""
@@ -335,12 +368,24 @@ def struct_q(v):
     return struct.pack("<Q", v)
 
 
+def _ops(v):
+    return [v] if isinstance(v, dict) else list(v or [])
+
+
+def _obj_text(o):
+    """One objectInstances entry in the game's own layout (4-space indent, "key":value)."""
+    return "    " + json.dumps(o, indent=2, ensure_ascii=False).replace("\n", "\n    ").replace('": ', '":')
+
+
 def _json_patch(j):
     """{"file": ..., "clone_object": {"match": {"Name": "x"}, "set": {"Name": "y", ...}}}:
     copy a matching entry of objectInstances, apply `set`, give it the next id and - if the
-    Name changed and no Guid is set - Guid = FNV-1a(Name). Inserted as text, the rest of
-    the file stays byte-identical."""
+    Name changed and no Guid is set - Guid = FNV-1a(Name).
+    {"file": ..., "set_object": {"match": {...}, "set": {...}, "all": false}}: change entries in
+    place (exactly one match unless "all": true). Only touched objects are rewritten, the rest
+    of the file stays byte-identical."""
     import copy
+    import re
 
     def t(text, _v):
         raw = text.encode("latin1")
@@ -360,16 +405,29 @@ def _json_patch(j):
                 o["Guid"] = fnv1a64(o["Name"])
             new_objs.append(o)
         s = body.decode("utf-8")
+        changed = 0
+        for op in _ops(j.get("set_object")):
+            hits = [o for o in objs if all(o.get(k) == v for k, v in op["match"].items())]
+            if not hits or (len(hits) > 1 and not op.get("all")):
+                raise SystemExit(f"json patch {j['file']}: set_object match {op['match']} found {len(hits)} entries "
+                                 f"(need exactly 1, or \"all\": true)")
+            for o in hits:
+                o.update(op["set"])
+                m = re.search(r'\n    \{\n      "id":%d,\n' % o["id"], s)
+                end = s.find("\n    }", m.end()) if m else -1
+                if end < 0:
+                    raise SystemExit(f"json patch {j['file']}: object id {o['id']} not in the expected layout")
+                s = s[:m.start() + 1] + _obj_text(o) + s[end + len("\n    }"):]
+                changed += 1
         end = s.rstrip().rstrip("}").rstrip()          # ... last object "}" + newline + "]"
         if not end.endswith("]"):
             raise SystemExit(f"json patch {j['file']}: unexpected layout (objectInstances must be last)")
-        insert = "".join(",\n" + json.dumps(o, indent=2, ensure_ascii=False).replace("\n", "\n    ").replace('": ', '":')
-                         .join(["    ", ""]) for o in new_objs)
+        insert = "".join(",\n" + _obj_text(o) for o in new_objs)
         k = len(end) - 1                               # position of the closing "]"
         head = s[:k].rstrip()
         out = head + insert + "\n  " + s[k:]
         json.loads(out)                                 # must still parse
-        return (out.encode("utf-8") + tail).decode("latin1"), len(new_objs)
+        return (out.encode("utf-8") + tail).decode("latin1"), len(new_objs) + changed
     t.resize = True
     return t
 
@@ -402,6 +460,8 @@ def specs_for(mods, idx):
             if j["file"] not in known:
                 raise SystemExit(f"{m['name']}: json patch target {j['file']} is not a game file")
             targets.append(("=" + j["file"], _json_patch(j)))
+        for lang, ids in text_tables(m["meta"].get("text", {})).items():
+            targets.append((f"{d5mod.LOC}{lang}.loc", d5mod._loc_set_ids(ids)))      # pc, ps4 and xbox copies
         pool = known | set(cloned)
         for g in m["meta"].get("generate", []):
             hits = generate_targets(g, pool)
@@ -429,6 +489,8 @@ def touched(m, idx):
     for c in m["meta"].get("clone", []):
         cloned |= set(clone_pairs(c, known).values())
     paths |= cloned | {j["file"] for j in m["meta"].get("json", [])}
+    langs = text_tables(m["meta"].get("text", {}))
+    paths |= {p for p in known for lang in langs if fnmatch.fnmatch(p, f"{d5mod.LOC}{lang}.loc")}
     for g in m["meta"].get("generate", []):
         for p in generate_targets(g, known | cloned):
             paths |= set(with_tiers(p, known | cloned))
@@ -538,6 +600,67 @@ def cmd_new(name, description=""):
         json.dump(meta, f, indent=2)
     print(f"created {d}")
     print(f"  next: python d5ml.py extract {name} <file or word>, edit, then apply {name}")
+
+
+LIVERY_DIR = "data:textures/vehicles/liveries/"
+LIVERY_DB = "data:event/liverydata/liverydata.json"
+
+
+def cmd_new_livery(car, png=None):
+    """mods/<car>-livery-NN/: a brand-new livery slot for any car - clone of the car's last
+    texture livery (all files: colour, mask, streamed tiers) + a new liverydata entry, unlocked
+    for everyone. --png paints it (see the *.guide.png from `extract` for where it shows),
+    otherwise it gets a colour shift so you can spot it in livery select."""
+    import re
+    import shutil
+    idx = _orig_index()
+    known = {e["path"] for e in idx.files()}
+    rx = re.compile(re.escape(LIVERY_DIR + car) + r"_livery_(\d\d)\.gtx$")
+    have = sorted(int(m.group(1)) for m in (rx.match(p) for p in known) if m)
+    if not have:
+        raise SystemExit(f"no livery textures for '{car}' - car ids: python d5ml.py search livery_01.gtx")
+    db = [o for o in json.loads(idx.read(idx.find(LIVERY_DB)).rstrip(b"\0"))["objectInstances"] if o.get("type") == "LvrDta"]
+    # texture liveries: database Name == texture name (any case) and index == its number (212 of 212)
+    by_name = {o["Name"].lower(): o for o in db}
+    src_n = next((n for n in reversed(have) if f"{car}_livery_{n:02d}" in by_name), None)
+    if src_n is None:
+        raise SystemExit(f"{car}: its livery textures have no livery-database entry (unused or editor-recipe car)")
+    src = by_name[f"{car}_livery_{src_n:02d}"]
+    used = {o["index"] for o in db if o.get("Vehicle ID") == src["Vehicle ID"]}
+    new_n = max(max(have), max(used)) + 1
+    if new_n > 99:
+        raise SystemExit(f"{car}: no free two-digit livery number left")
+    new = f"{car}_livery_{new_n:02d}"
+    new_db_name = src["Name"][:-2] + f"{new_n:02d}"         # keeps the car's own spelling, e.g. Alpine_..._Livery_04
+    index = new_n
+    cars = json.loads(idx.read(idx.find("data:event/vehicledata/vehicledata.json")).rstrip(b"\0"))["objectInstances"]
+    pretty = next((c["Name"] for c in cars if c.get("Guid") == src["Vehicle ID"]), car)
+    d = os.path.join(MODS_DIR, f"{car}-livery-{new_n:02d}")
+    if os.path.exists(d):
+        raise SystemExit(f"{d} already exists")
+    os.makedirs(d)
+    if png:
+        shutil.copy(png, os.path.join(d, "livery.png"))
+        steps = [{"effect": "overlay", "image": "livery.png"}]
+    else:
+        steps = [{"effect": "hue", "amount": 180}, {"effect": "saturate", "amount": 1.3}]
+    meta = {
+        "name": f"{pretty} - livery {new_n:02d} (NEW)", "version": "0.1.0", "author": "",
+        "description": f"a new livery slot for the {pretty}: {car}_livery_{src_n:02d} cloned to {new}, unlocked for everyone",
+        "clone": [{"from": f"{car}_livery_{src_n:02d}", "to": new, "in": LIVERY_DIR}],
+        "json": [{"file": LIVERY_DB, "clone_object": {"match": {"Name": src["Name"]}, "set": {
+            "Name": new_db_name, "index": index, "Recipe Path": "", "Event Unlock": [], "Sponsor": 0, "SponsorRank": 0,
+            "PlayerLevel": 0, "Entitlement": 0}}}],
+        "generate": [{"target": f"{LIVERY_DIR}{new}.gtx", "steps": steps}],
+        "game_build": build_stamp(idx),
+    }
+    with open(os.path.join(d, "mod.json"), "w", encoding="utf-8") as f:
+        json.dump(meta, f, indent=2, ensure_ascii=False)
+    print(f"created {d}  ({pretty}: livery {src_n:02d} -> {new_n:02d})")
+    if not png:
+        print(f"  paint it: python d5ml.py extract {os.path.basename(d)} {car}_livery_{src_n:02d}.gtx  -> PNG + .guide.png,")
+        print(f"  save your picture as {os.path.join(d, 'livery.png')} and use {{\"effect\": \"overlay\", \"image\": \"livery.png\"}}")
+    print(f"  then: python d5ml.py apply {os.path.basename(d)}   (livery select: the new tile is the last one)")
 
 
 def cmd_extract(name, pattern, raw=False):
@@ -696,6 +819,8 @@ def main(argv):
         cmd_search(argv[2:])
     elif cmd == "new" and len(argv) > 2:
         cmd_new(argv[2], " ".join(argv[3:]))
+    elif cmd == "new-livery" and len(argv) > 2:
+        cmd_new_livery(argv[2], argv[argv.index("--png") + 1] if "--png" in argv else None)
     elif cmd == "extract" and len(argv) > 3:
         cmd_extract(argv[2], argv[3], raw="--raw" in argv)
     elif cmd == "doctor":

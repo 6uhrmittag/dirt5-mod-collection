@@ -47,7 +47,8 @@ Uninstall everything: **Restore vanilla**, then delete the folder.
 | **Lancia 037 — 4th livery (NEW)** | adds a livery the game never had: new texture files + a new livery-database entry. Shows up as a fifth tile in livery select, unlocked |
 | **Trackside Takeover** | every trackside sponsor banner in all 10 countries becomes our own fake sponsors (D5ML, UwU ENERGY, GO TO BED, FREIBIER, TOUCH GRASS …) — the country art stays |
 | **Synthwave 037** | all three Lancia 037 liveries recoloured + our own star decals — generated on your PC, the mod contains only `stars.png`. Liveries 02/03 are rank-locked on new profiles: start with *All items unlocked* (DIRT 5 Unlocked) to pick them |
-| **Vivid** | punchier colour grade on every track and weather (+22 % saturation, +6 % contrast) — a graphics mod made from the game's own LUTs |
+| **Vivid** | punchier colour grade on every track and weather (+22 % saturation, +6 % contrast) — a graphics mod made from the game's own LUTs; verified in-game |
+| **Rival Roster** | the AI field gets silly names in all 9 languages — `Captain Handbrake`, `Grandma Sideways`, `Professor Airtime` … (81 drivers, any length, via the new `text` key) |
 | **Night Vision Racing** | the game's photo-mode night-vision filter on every track. You're welcome. |
 | **Bedtime Arcade** | our own Arcade poster art + longer menu texts (`QUIT` → `GO TO BED`, `START EVENT` → `ONE MORE RACE!!`) |
 
@@ -103,4 +104,5 @@ Made by **macha** — pack format, texture formats and the loader reverse-engine
 
 ## Changelog
 
+- **1.1.0** — `text` in mod.json: set or **add** UI texts in all 9 languages by LocID name, any length (with a warning for characters the Japanese/Korean/Chinese fonts don't have); `json` → `set_object` edits existing database entries in place; `d5ml.py new-livery <car> [--png]` adds a new livery slot to any of 79 cars; fixed `.loc` parsing of three files (`ps4/sim`, `xbox/fre`, `xbox/ita`). New example mod: Rival Roster.
 - **1.0.0** — first release: loader + window, any-size file replacement, PNG textures in all formats incl. streamed tiers, effects, recipes, drag & drop install, DIRT 5 Unlocked.
