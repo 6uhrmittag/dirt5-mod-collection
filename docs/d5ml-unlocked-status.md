@@ -27,7 +27,7 @@ Example mods (own art only): `_example-bedtime` (own Arcade poster + `partytext_
 
 **Known limits / TODO (ordered):**
 1. ~~New files~~ — done 2026-09-26 (hash = MD5(path)[:8], tree links, strings), **verified in-game** with a new vdef in the Lancia chain (lap 1:38.7). **First new-content mod done and verified in-game:** `_example-livery-slot-037` (4th Lancia livery via `clone` + `json`, fifth tile in livery select, shows in races). Next: nicer thumbnails (the tile uses the fallback image), liveries for other cars, new AI drivers / events via their JSON databases.
-2. ~~Unknown formats 21/28/30~~ — done 2026-09-26: RGBA16F, RGBA32F cubemaps, R11G11B10F colour LUTs (+ `grade`/`lut` effects, examples Vivid + Night Vision Racing; **verified in-game**: the Night Vision run turns the whole race green, so LUT edits reach the renderer. Open: map which LUT each track/weather uses.
+2. ~~Unknown formats 21/28/30~~ — done 2026-09-26: RGBA16F, RGBA32F cubemaps, R11G11B10F colour LUTs (+ `grade`/`lut` effects, examples Vivid + Night Vision Racing; **verified in-game**: the Night Vision run turns the whole race green, so LUT edits reach the renderer. Which LUT each event/weather uses: `docs/lut-map.md` (verified in-game with a tint probe, #5).
 3. BC7 encoder is mode 6 only (31–36 dB on noisy textures) — add modes 1/3 for sharper results — 1 evening.
 4. **Steam build**: needs a Steam copy to check `dat.ndx`/packs — unknown.
 5. ~~Livery editing workflow~~ — done: `d5ml.py extract` writes a `*.guide.png` (paint mask over the livery).
